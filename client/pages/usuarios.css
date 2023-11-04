@@ -1,0 +1,49 @@
+/* Estilos para la tabla */
+.usuarios {
+  margin-top: 45px;
+}
+
+.usuarios h1 {
+  text-align: center;
+}
+
+table {
+  border-collapse: collapse;
+  width: 100%;
+  max-width: 600px;
+  margin: 10px auto;
+}
+
+tr:nth-child(even) {
+  background-color: #f2f2f2;
+}
+
+td,
+th {
+  border: 1px solid #dddddd; /* Bordes en todas las celdas */
+  text-align: left;
+  padding: 8px;
+}
+
+th,
+td {
+  text-align: center;
+}
+
+th {
+  background-color: #333;
+  color: white;
+}
+
+tr:hover {
+  background-color: #ddd;
+}
+
+input[type="checkbox"] {
+  width: 15px;
+  height: 15px;
+}
+
+input[type="checkbox"]:disabled {
+  cursor: not-allowed;
+}

@@ -1,0 +1,119 @@
+import { pool } from "../database/db.js";
+
+export const prueba = (req, res) => {
+  return res.status(200).json("hola");
+};
+
+function formatDate(date, ignoreHour = false) {
+  let dateParts = date.toLocaleDateString().split('/');
+  if (ignoreHour) {
+    return `${dateParts[2]}-${dateParts[1]}-${dateParts[0]}`
+  }
+  let hour = date.getHours();
+  let minute = date.getMinutes();
+  return `${dateParts[2]}-${dateParts[1]}-${dateParts[0]} ${hour}:${minute}:0`
+}
+
+function compareHours(a, b) {
+  let baseDate = new Date(0);
+  const [h1, m1] = a.split(':');
+  const [h2, m2] = b.split(':');
+  let hour1 = new Date(baseDate);
+  let hour2 = new Date(baseDate);
+
+  hour1.setHours(h1, m1)
+  hour2.setHours(h2, m2)
+
+  if (hour1 < hour2) {
+    return -1;
+  }
+  if (hour1 > hour2) {
+    return 1;
+  }
+  return 0;
+}
+
+export const reserveResource = async (req, res) => {
+  try {
+    let { resourceId, unitNum, horaInicio, horaFin } = req.body;
+    if (resourceId && unitNum && horaInicio && horaFin) {
+      horaInicio = new Date(horaInicio);
+      horaFin = new Date(horaFin);
+      resourceId = parseInt(resourceId);
+      unitNum = parseInt(unitNum);
+      let fields = [resourceId, unitNum, horaInicio, horaFin];
+      let invalidFields = ['resourceId', 'unitNum', 'horaInicio', 'horaFin'].filter((e, i) => isNaN(fields[i]))
+      if (invalidFields.length != 0) {
+        return res.status(400).json({ error: invalidFields.join(', ') + ' invalido' + (invalidFields.length != 1 ? 's' : '') })
+      }
+
+      let reserveDay = new Date(horaInicio.toDateString());
+      if (reserveDay.getTime() != new Date(horaFin.toDateString()).getTime()) {
+        return res.status(400).json({ error: 'El inicio y fin de la reserva deben ser en el mismo día' })
+      }
+
+      let weekday = horaInicio.getDay() == 0 ? 7 : horaInicio.getDay()
+
+      let [schedules] = await pool.query(
+        `SELECT * FROM horario_recurso WHERE fk_id_recurso = ? AND fk_num_unidad = ? AND dia = ?`,
+        [resourceId, unitNum, weekday,]
+      )
+
+      // conjunto de errores {inicio, fin} vs disponibilidad
+      if (schedules.length == 0) {
+        return res.status(403).json({ error: 'El recurso no tiene servicio en el horario seleccionado' })
+      }
+
+      let validInterval = false;
+      for (let schedule of schedules) {
+        let inicio = compareHours(schedule.hora_inicio, horaInicio.getHours() + ':' + horaInicio.getMinutes());
+        let fin = compareHours(schedule.hora_cierre, horaFin.getHours() + ':' + horaFin.getMinutes());
+        if (inicio <= 0 && fin >= 0) {
+          validInterval = true;
+        }
+      }
+
+      if (!validInterval) {
+        return res.status(403).json({ error: 'El recurso no tiene servicio en el horario seleccionado' })
+      }
+
+      const connection = await pool.getConnection();
+      try {
+        // await connection.beginTransaction(); // Inicia la transacción
+        await connection.query('LOCK TABLES reserva WRITE')
+        let formatInicio = formatDate(horaInicio),
+        formatFin = formatDate(horaFin);
+        let [conflictReserves] = await connection.query(
+          `SELECT * FROM reserva WHERE
+          NOT ((fecha_inicio_reserva <= ? AND fecha_fin_reserva <= ?) OR (fecha_inicio_reserva >= ? AND fecha_fin_reserva >= ?))`,
+          [formatInicio, formatInicio, formatFin, formatFin]
+        )
+
+        if (conflictReserves.length > 0) {
+          await connection.query('UNLOCK TABLES')
+          return res.status(403).json({ error: 'El recurso no tiene disponibilidad en el horario seleccionado' })
+        }
+        let result = await connection.query(
+          `INSERT INTO reserva (fecha_de_reserva, fecha_inicio_reserva, fecha_fin_reserva, 
+          fk_num_unidad, fk_id_recurso, fk_id_usuario) VALUES (?, ?, ?, ?, ?, ?)`,
+          [formatDate(reserveDay, true), formatDate(horaInicio), formatDate(horaFin), unitNum, resourceId, req.user.id_usuario]
+        )
+        
+        await connection.query('UNLOCK TABLES')
+        // await connection.commit(); // Confirma la transacción
+      } catch (error) {
+        await connection.rollback(); // Revierte la transacción en caso de error
+        throw error; // Relanza el error para manejarlo en el contexto superior
+      } finally {
+        connection.release(); // Devuelve la conexión al pool
+      }
+
+      return res.status(200).json({ message: 'Reserva realizada con exito' });
+    }
+    else {
+      return res.status(400).json({ error: 'Faltan campos en la consulta' });
+    }
+  } catch (error) {
+    return res.status(500).json({ error: error.message });
+  }
+};
