@@ -4,6 +4,7 @@ import UsersRoutes from "./routes/users.routes.js";
 import TokensRoutes from "./routes/tokens.routes.js";
 import ReserveRoutes from './routes/reserve.routes.js'
 import ResourcesRoutes from './routes/resource.routes.js'
+import LoanRoutes from './routes/loan.routes.js'
 
 const app = express();
 
@@ -14,6 +15,8 @@ app.use("/api/user/", UsersRoutes);
 app.use("/api/tokens/", TokensRoutes);
 app.use("/api/booking/", ReserveRoutes);
 app.use("/api/resources/", ResourcesRoutes);
+app.use("/api/resources/", ResourcesRoutes);
+app.use("/api/loan/", LoanRoutes);
 
 app.listen("3000");
 console.log("Servidor Iniciado / Puerto 3000");
