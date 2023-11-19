@@ -114,6 +114,7 @@ export const endLoan = async (req, res) =>  {
 
 export const activeLoans = async (req, res) =>  {
     let {reserveOwnerMail} = req.body;
+    res.setHeader('Content-Type', 'application/json');
     try {
         let [loans] = await pool.query(
             `SELECT prestamo.*, usuario.correo, reserva.fecha_fin_reserva, recurso.* FROM usuario
@@ -127,11 +128,11 @@ export const activeLoans = async (req, res) =>  {
         if(loans.length > 0){
             return res.status(200).json(loans.map(e => {
                 return {
-                    mail: e.correo,
+                    reserveID: e.fk_id_reserva,
                     leanStartDate: e.f_fecha_inicio,
                     reserveEndDate: e.fecha_fin_reserva,
                     resourceName: e.nombre,
-                    resourceDescp: e.descripcion
+                    resourceDescp: e.descripcion,
                 }
             }));
         }

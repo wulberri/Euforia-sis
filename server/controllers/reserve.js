@@ -54,7 +54,7 @@ export const reserveResource = async (req, res) => {
         // await connection.beginTransaction(); // Inicia la transacción
         await connection.query('LOCK TABLES reserva WRITE')
         let formatInicio = formatDate(horaInicio),
-        formatFin = formatDate(horaFin);
+          formatFin = formatDate(horaFin);
         let [conflictReserves] = await connection.query(
           `SELECT * FROM reserva WHERE
           NOT ((fecha_inicio_reserva <= ? AND fecha_fin_reserva <= ?) OR (fecha_inicio_reserva >= ? AND fecha_fin_reserva >= ?))`,
@@ -70,7 +70,7 @@ export const reserveResource = async (req, res) => {
           fk_num_unidad, fk_id_recurso, fk_id_usuario) VALUES (?, ?, ?, ?, ?, ?)`,
           [formatDate(reserveDay, true), formatDate(horaInicio), formatDate(horaFin), unitNum, resourceId, req.user.id_usuario]
         )
-        
+
         await connection.query('UNLOCK TABLES')
         // await connection.commit(); // Confirma la transacción
       } catch (error) {
@@ -90,3 +90,33 @@ export const reserveResource = async (req, res) => {
     return res.status(500).json({ error: error.message });
   }
 };
+
+export const activeReserves = async (req, res) => {
+  let { reserveOwnerMail } = req.body;
+  try {
+    let [reserves] = await pool.query(
+      `SELECT reserva.id_reserva, reserva.fecha_inicio_reserva, reserva.fecha_fin_reserva, recurso.*, usuario.correo FROM reserva
+      INNER JOIN usuario ON reserva.fk_id_usuario = usuario.id_usuario
+      INNER JOIN recurso ON recurso.pk_id_recurso = reserva.fk_id_recurso
+      LEFT JOIN prestamo ON prestamo.fk_id_reserva = reserva.id_reserva
+      WHERE usuario.correo = ? AND prestamo.fk_id_reserva is NULL;`,
+      [reserveOwnerMail]
+    )
+    if (reserves.length > 0) {
+      return res.status(200).json(reserves.map(e => {
+        return {
+          reserveID: e.id_reserva,
+          leanStartDate: e.f_fecha_inicio,
+          reserveEndDate: e.fecha_fin_reserva,
+          resourceName: e.nombre,
+          resourceDescp: e.descripcion,
+        }
+      }));
+    }
+    else {
+      return res.status(200).json({ message: 'No hay reservas activas para ese usuario' });
+    }
+  } catch (error) {
+    return res.status(500).json({ error: error.message });
+  }
+}
