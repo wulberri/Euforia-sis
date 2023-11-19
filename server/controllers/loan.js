@@ -27,12 +27,13 @@ export const startLoan = async (req, res) =>  {
         let now = new Date();
         let timeDifference = (now-reserva.fecha_inicio_reserva)/1000/60; //minutes
         
-        if(timeDifference < -5){
-            return res.status(400).json({message: 'Es muy pronto para inciar el prestamo'})
-        }
-        else if(timeDifference > 5){
-            return res.status(400).json({message: 'Es muy tarde para inciar el prestamo'})
-        }
+        // NOTE commented for easy test
+        // if(timeDifference < -5){
+        //     return res.status(400).json({message: 'Es muy pronto para inciar el prestamo'})
+        // }
+        // else if(timeDifference > 5){
+        //     return res.status(400).json({message: 'Es muy tarde para inciar el prestamo'})
+        // }
 
         try{
             await pool.query("INSERT INTO prestamo (fk_id_reserva, f_fecha_inicio, fk_id_admin_entrega) VALUES (?, ?, ?)",
@@ -107,6 +108,37 @@ export const endLoan = async (req, res) =>  {
         
     }
     catch (error) {
+        return res.status(500).json({ error: error.message });
+    }
+}
+
+export const activeLoans = async (req, res) =>  {
+    let {reserveOwnerMail} = req.body;
+    try {
+        let [loans] = await pool.query(
+            `SELECT prestamo.*, usuario.correo, reserva.fecha_fin_reserva, recurso.* FROM usuario
+            INNER JOIN reserva ON reserva.fk_id_usuario = usuario.id_usuario
+            INNER JOIN prestamo ON prestamo.fk_id_reserva = reserva.id_reserva
+            INNER JOIN recurso ON recurso.pk_id_recurso = reserva.fk_id_recurso
+            WHERE fk_id_admin_devolucion IS NULL 
+            AND usuario.correo = ? ;`,
+            [reserveOwnerMail]
+        )
+        if(loans.length > 0){
+            return res.status(200).json(loans.map(e => {
+                return {
+                    mail: e.correo,
+                    leanStartDate: e.f_fecha_inicio,
+                    reserveEndDate: e.fecha_fin_reserva,
+                    resourceName: e.nombre,
+                    resourceDescp: e.descripcion
+                }
+            }));
+        }
+        else {
+            return res.status(200).json({message: 'No hay prestamos activos para ese usuario'});
+        }
+    } catch (error) {
         return res.status(500).json({ error: error.message });
     }
 }

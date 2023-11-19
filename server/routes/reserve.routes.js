@@ -5,6 +5,6 @@ import { authorization, isAdmin } from "../middlewares/authorization.js";
 const router = Router();
 
 router.get("/", [authorization], prueba);
-router.get("/reserve", [authorization], reserveResource);
+router.post("/reserve", [authorization], reserveResource);
 
 export default router;

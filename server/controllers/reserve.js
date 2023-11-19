@@ -75,6 +75,7 @@ export const reserveResource = async (req, res) => {
         // await connection.commit(); // Confirma la transacción
       } catch (error) {
         await connection.rollback(); // Revierte la transacción en caso de error
+        await connection.query('UNLOCK TABLES')
         throw error; // Relanza el error para manejarlo en el contexto superior
       } finally {
         connection.release(); // Devuelve la conexión al pool

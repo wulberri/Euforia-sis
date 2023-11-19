@@ -15,7 +15,6 @@ app.use("/api/user/", UsersRoutes);
 app.use("/api/tokens/", TokensRoutes);
 app.use("/api/booking/", ReserveRoutes);
 app.use("/api/resources/", ResourcesRoutes);
-app.use("/api/resources/", ResourcesRoutes);
 app.use("/api/loan/", LoanRoutes);
 
 app.listen("3000");
