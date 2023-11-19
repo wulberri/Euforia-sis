@@ -6,6 +6,7 @@ import NotFound from "../pages/NotFound";
 import Reservas from "../pages/Reservas";
 import Usuarios from '../pages/Usuarios';
 import Prestamos from '../pages/Prestamos'
+import Recursos from '../pages/Recursos'
 
 function App() {
   return (
@@ -21,6 +22,9 @@ function App() {
         </Route>
         <Route element={<PrivateRouteAdmin />}>
           <Route path="/prestamos" element={<Prestamos />} />
+        </Route>
+        <Route element={<PrivateRoute />}>
+          <Route path="/recursos" element={<Recursos />} />
         </Route>
         <Route path="*" element={<NotFound />} />
       </Routes>
