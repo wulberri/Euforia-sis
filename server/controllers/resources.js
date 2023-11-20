@@ -1,5 +1,7 @@
 import { pool } from "../database/db.js";
 
+const weekDays = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"];
+
 
 export async function allResources(req, res) {
   let [resources] = await pool.query(
@@ -15,8 +17,6 @@ export async function allResources(req, res) {
       AND recurso.pk_fk_num_unidad = patio.pk_fk_num_unidad
     INNER JOIN horario_recurso ON horario_recurso.fk_num_unidad = recurso.pk_fk_num_unidad
     AND horario_recurso.fk_id_recurso = recurso.pk_id_recurso;`);
-
-  const weekDays = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"];
 
   let simplifiedResources = []
   resources = resources.map((resource)=>{
@@ -50,5 +50,33 @@ export async function allResources(req, res) {
   })
   
   return res.status(200).json(simplifiedResources);
+
+}
+
+export const getUnitSchedule = async (req, res)=>{
+  const {unitNumber} = req.query;
+
+  try {
+    let [queryResult] = await pool.query(
+      `SELECT * FROM horario_unidad LEFt JOIN unidad on horario_unidad.fk_num_unidad = unidad.num_unidad
+      WHERE fk_num_unidad = ?`,
+      [unitNumber]
+    );
+    if(queryResult.length == 0){
+      return res.status(500).json({ error: 'No hay un horario para la unidad' });
+    }
+    let schedules = {}
+    for(let schedule of queryResult){
+      let day = weekDays[schedule.dia-1]
+      let horary = {
+        start: schedule.hora_inicio,
+        end: schedule.hora_cierre
+      }
+      schedules[day] = horary
+    }
+    return res.status(200).json({ unidNumber: unitNumber, name: queryResult[0].nombre, schedule: schedules});
+  } catch (error) {
+    return res.status(500).json({ error: error.message });
+  }
 
 }
