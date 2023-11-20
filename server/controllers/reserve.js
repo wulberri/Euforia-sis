@@ -57,8 +57,9 @@ export const reserveResource = async (req, res) => {
           formatFin = formatDate(horaFin);
         let [conflictReserves] = await connection.query(
           `SELECT * FROM reserva WHERE
+          (reserva.fk_num_unidad = ? AND reserva.fk_id_recurso = ?) AND
           NOT ((fecha_inicio_reserva <= ? AND fecha_fin_reserva <= ?) OR (fecha_inicio_reserva >= ? AND fecha_fin_reserva >= ?))`,
-          [formatInicio, formatInicio, formatFin, formatFin]
+          [unitNum, resourceId, formatInicio, formatInicio, formatFin, formatFin]
         )
 
         if (conflictReserves.length > 0) {
@@ -99,7 +100,9 @@ export const activeReserves = async (req, res) => {
       INNER JOIN usuario ON reserva.fk_id_usuario = usuario.id_usuario
       INNER JOIN recurso ON recurso.pk_id_recurso = reserva.fk_id_recurso
       LEFT JOIN prestamo ON prestamo.fk_id_reserva = reserva.id_reserva
-      WHERE usuario.correo = ? AND prestamo.fk_id_reserva is NULL;`,
+      WHERE usuario.correo = ? AND prestamo.fk_id_reserva is NULL 
+      AND reserva.fecha_de_reserva >= CURDATE()
+      ORDER BY reserva.fecha_inicio_reserva ASC;`,
       [reserveOwnerMail]
     )
     if (reserves.length > 0) {
@@ -110,6 +113,53 @@ export const activeReserves = async (req, res) => {
           reserveEndDate: e.fecha_fin_reserva,
           resourceName: e.nombre,
           resourceDescp: e.descripcion,
+        }
+      }));
+    }
+    else {
+      return res.status(200).json({ message: 'No hay reservas activas para ese usuario' });
+    }
+  } catch (error) {
+    return res.status(500).json({ error: error.message });
+  }
+}
+
+export const historyReserves = async (req, res) => {
+  let { id_usuario } = req.user;
+  try {
+    let [reserves] = await pool.query(
+      `SELECT reserva.id_reserva, reserva.fecha_inicio_reserva, reserva.fecha_fin_reserva, recurso.*,
+      CASE 
+        WHEN CURDATE() > reserva.fecha_de_reserva AND prestamo.fk_id_reserva IS NULL THEN 'Vencida'
+        WHEN prestamo.fk_id_reserva IS NULL THEN 'Reservada'
+        WHEN prestamo.fk_id_admin_devolucion IS NULL THEN 'Activa'
+        ELSE 'Terminada'
+      END AS activa
+      FROM reserva
+      INNER JOIN usuario ON reserva.fk_id_usuario = usuario.id_usuario
+      INNER JOIN recurso ON recurso.pk_id_recurso = reserva.fk_id_recurso
+      LEFT JOIN prestamo ON prestamo.fk_id_reserva = reserva.id_reserva
+      WHERE usuario.id_usuario = ?
+      ORDER BY 
+        CASE activa
+          WHEN 'Activa' THEN 1
+          WHEN 'Reservada' THEN 2
+          WHEN 'Terminada' THEN 3
+          WHEN 'Vencida' THEN 4
+          ELSE 5 -- Manejo de cualquier otro valor que pueda haber
+        END,
+        reserva.fecha_inicio_reserva ASC;`,
+      [id_usuario]
+    )
+    if (reserves.length > 0) {
+      return res.status(200).json(reserves.map(e => {
+        return {
+          reserveID: e.id_reserva,
+          reserveStartDate: e.fecha_inicio_reserva,
+          reserveEndDate: e.fecha_fin_reserva,
+          resourceName: e.nombre,
+          resourceDescp: e.descripcion,
+          state: e.activa
         }
       }));
     }
