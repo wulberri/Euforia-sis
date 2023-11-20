@@ -14,8 +14,11 @@ const FormReserve = ({ data, onClose }) => {
   const [horaFinal, setHoraFinal] = useState('');
   const [horasHabilitadas, setHorasHabilitadas] = useState(false);
   const [repsHabilitada, setRepsHabilitada] = useState(false);
+  const [repsNumber, setRepsNumber] = useState(1);
+  const [responses, setResponses] = useState([])
 
   const {getAccessToken} = useContextUser();
+
 
   const handleDateChange = (event) => {
     const selectedDate = new Date(event.target.value.replaceAll('-', '/'));
@@ -53,18 +56,38 @@ const FormReserve = ({ data, onClose }) => {
 
   const handleSubmit = async (event) =>{
     event.preventDefault();
-    let selectedStartDate = new Date(selectedDate);
-    let selectedEndDate = new Date(selectedDate);
-    selectedStartDate.setHours(...selectedStartHour.split(':'));
-    selectedEndDate.setHours(...selectedEndHour.split(':'));
-    console.log(selectedStartDate, selectedEndDate)
-    let response = await doReserve({
-      "unitNum": data.unidNumber,
-      "resourceId": data.id,
-      "horaInicio": selectedStartDate,
-      "horaFin": selectedEndDate
-    }, getAccessToken())
+    let promises = [];
 
+    let reserveDate = new Date(selectedDate);
+    let startHour = selectedStartHour.split(':');
+    let endHour = selectedEndHour.split(':');
+    let reps = repsNumber;
+    if(!repsHabilitada) {
+      reps = 1;
+    }
+    for(let i=1; i<= reps; i++){
+      let selectedStartDate = new Date(reserveDate);
+      let selectedEndDate = new Date(reserveDate);
+      selectedStartDate.setHours(...startHour);
+      selectedEndDate.setHours(...endHour);
+      promises.push([new Date(reserveDate), doReserve({
+        "unitNum": data.unidNumber,
+        "resourceId": data.id,
+        "horaInicio": selectedStartDate,
+        "horaFin": selectedEndDate
+      }, getAccessToken())])
+      reserveDate.setDate(reserveDate.getDate()+7)
+    }
+    let response = []
+    for(let [_, promise] of promises){
+      try{
+        response.push([_, await promise, false]);
+      }
+      catch(e) {
+        response.push([_, e.response.data, true])
+      }
+    }
+    setResponses(response)
     console.log(response)
   }
 
@@ -117,7 +140,7 @@ const FormReserve = ({ data, onClose }) => {
       {repsHabilitada && (
         <label>
           ¿Cuántos días desea reservar?:
-          <input className="normal" type="number" min="1" required/>
+          <input className="normal" type="number" min="1" onChange={(event)=>setRepsNumber(parseInt(event.target.value))} required/>
         </label>
       )}
       {horasHabilitadas && (
@@ -140,6 +163,13 @@ const FormReserve = ({ data, onClose }) => {
         <button className="button" type="submit">
           Reservar
         </button>
+      </div>
+      <div>
+        <ul>
+          {responses.map(([date, response, error], index) => (
+            <li className={error ? 'response-error' : ''} key={index}>{date.toDateString()} {response.message || response.error}</li>
+          ))}
+        </ul>
       </div>
     </form>
   );

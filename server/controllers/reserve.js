@@ -72,7 +72,7 @@ export const reserveResource = async (req, res) => {
         )
 
         await connection.query('UNLOCK TABLES')
-        // await connection.commit(); // Confirma la transacción
+        await connection.commit(); // Confirma la transacción
       } catch (error) {
         await connection.rollback(); // Revierte la transacción en caso de error
         await connection.query('UNLOCK TABLES')
