@@ -1,4 +1,4 @@
-import "./navbar.css";
+import "./resourcestable.css";
 import { getAllResources } from "../api/recursos.api";
 import {useEffect, useState} from "react";
 import FormReserve from './FormReserve';
