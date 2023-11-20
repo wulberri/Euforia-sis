@@ -1,22 +1,29 @@
 import "./formreserve.css"
 import React from 'react';
 import {useState} from "react";
+import { doReserve } from "../api/reservas.api.js";
+import { useContextUser } from "../context/UserContext.jsx";
 
 const FormReserve = ({ data, onClose }) => {
   const date = new Date();
   const actualDate = date.toISOString().substring(0,10); 
   const [selectedDate, setSelectedDate] = useState('');
+  const [selectedStartHour, setSelectedStartHour] = useState('');
+  const [selectedEndHour, setSelectedEndtHour] = useState('');
   const [horaInicial, setHoraInicial] = useState('');
   const [horaFinal, setHoraFinal] = useState('');
   const [horasHabilitadas, setHorasHabilitadas] = useState(false);
   const [repsHabilitada, setRepsHabilitada] = useState(false);
 
+  const {getAccessToken} = useContextUser();
+
   const handleDateChange = (event) => {
-    const selectedDay = new Date(event.target.value).getDay();
+    const selectedDate = new Date(event.target.value.replaceAll('-', '/'));
+    const selectedDay = selectedDate.getDay();
     let schedule = null;
     setHorasHabilitadas(true);
     // 6 = domingo, 0 = lunes, 1 = martes, ..., 5 = sábado
-    setSelectedDate(selectedDay);
+    setSelectedDate(selectedDate);
     
     if (selectedDay === 0 ){
         schedule = data.schedule.Lunes;
@@ -36,8 +43,33 @@ const FormReserve = ({ data, onClose }) => {
     setHoraFinal(schedule.end)
   };
 
+  const handleStartDateChange = (event) => {
+    setSelectedStartHour(event.target.value)
+  }
+
+  const handleEndDateChange = (event) => {
+    setSelectedEndtHour(event.target.value)
+  }
+
+  const handleSubmit = async (event) =>{
+    event.preventDefault();
+    let selectedStartDate = new Date(selectedDate);
+    let selectedEndDate = new Date(selectedDate);
+    selectedStartDate.setHours(...selectedStartHour.split(':'));
+    selectedEndDate.setHours(...selectedEndHour.split(':'));
+    console.log(selectedStartDate, selectedEndDate)
+    let response = await doReserve({
+      "unitNum": data.unidNumber,
+      "resourceId": data.id,
+      "horaInicio": selectedStartDate,
+      "horaFin": selectedEndDate
+    }, getAccessToken())
+
+    console.log(response)
+  }
+
   return (
-    <form>
+    <form onSubmit={handleSubmit}>
       <label>
         Unidad:
         <input className="normal" type="number" value={data.unidNumber} readOnly />
@@ -92,11 +124,11 @@ const FormReserve = ({ data, onClose }) => {
         <div>
           <label>
             Hora Inicial:
-            <input className="normal" type="time" min={horaInicial} max={horaFinal}  required/>
+            <input className="normal" type="time" min={horaInicial} max={horaFinal} onChange={handleStartDateChange} required/>
           </label>
           <label>
             Hora Final:
-            <input className="normal" type="time" min={horaInicial} max={horaFinal}  required/>
+            <input className="normal" type="time" min={horaInicial} max={horaFinal} onChange={handleEndDateChange} required/>
           </label>
         </div>
       )}
