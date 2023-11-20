@@ -128,7 +128,8 @@ export const historyReserves = async (req, res) => {
     let [reserves] = await pool.query(
       `SELECT reserva.id_reserva, reserva.fecha_inicio_reserva, reserva.fecha_fin_reserva, recurso.*,
       CASE 
-        WHEN prestamo.fk_id_reserva IS NULL THEN 'En espera'
+        WHEN CURDATE() > reserva.fecha_de_reserva AND prestamo.fk_id_reserva IS NULL THEN 'Vencida'
+        WHEN prestamo.fk_id_reserva IS NULL THEN 'Reservada'
         WHEN prestamo.fk_id_admin_devolucion IS NULL THEN 'Activa'
         ELSE 'Terminada'
       END AS activa
@@ -136,7 +137,16 @@ export const historyReserves = async (req, res) => {
       INNER JOIN usuario ON reserva.fk_id_usuario = usuario.id_usuario
       INNER JOIN recurso ON recurso.pk_id_recurso = reserva.fk_id_recurso
       LEFT JOIN prestamo ON prestamo.fk_id_reserva = reserva.id_reserva
-      WHERE usuario.id_usuario = ?;`,
+      WHERE usuario.id_usuario = ?
+      ORDER BY 
+        CASE activa
+          WHEN 'Activa' THEN 1
+          WHEN 'Reservada' THEN 2
+          WHEN 'Terminada' THEN 3
+          WHEN 'Vencida' THEN 4
+          ELSE 5 -- Manejo de cualquier otro valor que pueda haber
+        END,
+        reserva.fecha_inicio_reserva ASC;`,
       [id_usuario]
     )
     if (reserves.length > 0) {
