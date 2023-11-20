@@ -54,7 +54,7 @@ export async function allResources(req, res) {
 }
 
 export const getUnitSchedule = async (req, res)=>{
-  const {unitNumber} = req.query;
+  const {unitNumber} = req.params;
 
   try {
     let [queryResult] = await pool.query(

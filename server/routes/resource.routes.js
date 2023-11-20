@@ -4,6 +4,6 @@ import { allResources, getUnitSchedule } from '../controllers/resources.js'
 const router = Router();
 
 router.get("/all-resources", allResources);
-router.get("/unit-schedule", getUnitSchedule);
+router.get("/unit-schedule/:unitNumber", getUnitSchedule);
 
 export default router;
