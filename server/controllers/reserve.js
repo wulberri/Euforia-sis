@@ -100,7 +100,9 @@ export const activeReserves = async (req, res) => {
       INNER JOIN usuario ON reserva.fk_id_usuario = usuario.id_usuario
       INNER JOIN recurso ON recurso.pk_id_recurso = reserva.fk_id_recurso
       LEFT JOIN prestamo ON prestamo.fk_id_reserva = reserva.id_reserva
-      WHERE usuario.correo = ? AND prestamo.fk_id_reserva is NULL;`,
+      WHERE usuario.correo = ? AND prestamo.fk_id_reserva is NULL 
+      AND reserva.fecha_de_reserva >= CURDATE()
+      ORDER BY reserva.fecha_inicio_reserva ASC;`,
       [reserveOwnerMail]
     )
     if (reserves.length > 0) {

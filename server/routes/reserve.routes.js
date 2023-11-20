@@ -6,7 +6,7 @@ const router = Router();
 
 router.get("/", [authorization], prueba);
 router.post("/reserve", [authorization], reserveResource);
-router.post('/active-reserves', [authorization, isAdmin], activeReserves) // Para administradores
+router.post('/active-reserves', [authorization, isAdmin], activeReserves) // Para administradores -> reservas sin iniciar su prestamo
 router.post('/history-reserves', [authorization], historyReserves) // Para usuarios
 
 export default router;
