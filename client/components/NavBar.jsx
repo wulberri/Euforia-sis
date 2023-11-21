@@ -35,8 +35,10 @@ function NavBar() {
       </div>
 
       <div className="nav-content">
-        {getUser().rol === "usuario" && (
+        {getUser().rol === "usuario" ? (
           <Link to="/recursos">Recursos</Link>
+        ):(
+          <Link to="/adrecursos">Recursos</Link>
         )}
         <Link to="/reservas">Reservas</Link>
         {getUser().rol === "administrador" && (

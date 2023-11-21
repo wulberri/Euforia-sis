@@ -69,79 +69,80 @@ const FormReserve = ({ data, onClose }) => {
   }
 
   return (
-    <form onSubmit={handleSubmit}>
-      <label>
-        Unidad:
-        <input className="normal" type="number" value={data.unidNumber} readOnly />
-      </label>
-      <label>
-        Nombre:
-        <input className="normal" type="text" value={data.name} readOnly />
-      </label>
-      {data.type === 'auditorium' ? (
+    <div className="fat_form">
+      <form className="formRe" onSubmit={handleSubmit}>
         <label>
-            Aforo:
-            <input className="normal" type="number" value={data.aforo} readOnly />
-        </label>
-      ): data.type === 'classroom' ? (
-        <>
-            <label>
-                Material de Silla:
-                <input className="normal" type="text" value={data.chairMaterial} readOnly />
-            </label>
-            <label>
-                Cantidad de Sillas:
-                <input className="normal" type="number" value={data.chairAmount} readOnly />
-            </label>
-        </>
-      ):(
-        <label>
-            Estilo:
-            <input className="normal" type="text" value={data.yardType} readOnly />
-        </label>
-      )}
-      <label className="textarea">
-        Descripción:
-        <textarea value={data.description} readOnly />
-      </label>
-      <div className="box">
-        <label>
-          Día:
-          <input className="normal" type="date" min={actualDate} onChange={handleDateChange} required/>
+          Unidad:
+          <input className="normal" type="number" value={data.unidNumber} readOnly />
         </label>
         <label>
-          Repetitivo:
-          <input className="normal" type="checkbox" checked={repsHabilitada} onChange={()=>setRepsHabilitada(!repsHabilitada)} />
+          Nombre:
+          <input className="normal" type="text" value={data.name} readOnly />
         </label>
-      </div>
-      {repsHabilitada && (
-        <label>
-          ¿Cuántos días desea reservar?:
-          <input className="normal" type="number" min="1" required/>
-        </label>
-      )}
-      {horasHabilitadas && (
-        <div>
+        {data.type === 'auditorium' ? (
           <label>
-            Hora Inicial:
-            <input className="normal" type="time" min={horaInicial} max={horaFinal} onChange={handleStartDateChange} required/>
+              Aforo:
+              <input className="normal" type="number" value={data.aforo} readOnly />
+          </label>
+        ): data.type === 'classroom' ? (
+          <>
+              <label>
+                  Material de Silla:
+                  <input className="normal" type="text" value={data.chairMaterial} readOnly />
+              </label>
+              <label>
+                  Cantidad de Sillas:
+                  <input className="normal" type="number" value={data.chairAmount} readOnly />
+              </label>
+          </>
+        ):(
+          <label>
+              Estilo:
+              <input className="normal" type="text" value={data.yardType} readOnly />
+          </label>
+        )}
+        <label className="textarea">
+          Descripción:
+          <textarea value={data.description} readOnly />
+        </label>
+        <div className="box">
+          <label>
+            Día:
+            <input className="normal" type="date" min={actualDate} onChange={handleDateChange} required/>
           </label>
           <label>
-            Hora Final:
-            <input className="normal" type="time" min={horaInicial} max={horaFinal} onChange={handleEndDateChange} required/>
+            Repetitivo:
+            <input className="normal" type="checkbox" checked={repsHabilitada} onChange={()=>setRepsHabilitada(!repsHabilitada)} />
           </label>
         </div>
-      )}
-      <div className="fat_btn">
-        <button className="button" type="button" onClick={onClose}>
-          Cancelar
-        </button>
-        {/*AGREGAR POST PARA RESERVAR*/}
-        <button className="button" type="submit">
-          Reservar
-        </button>
-      </div>
-    </form>
+        {repsHabilitada && (
+          <label>
+            ¿Cuántos días desea reservar?:
+            <input className="normal" type="number" min="1" required/>
+          </label>
+        )}
+        {horasHabilitadas && (
+          <div>
+            <label>
+              Hora Inicial:
+              <input className="normal" type="time" min={horaInicial} max={horaFinal} onChange={handleStartDateChange} required/>
+            </label>
+            <label>
+              Hora Final:
+              <input className="normal" type="time" min={horaInicial} max={horaFinal} onChange={handleEndDateChange} required/>
+            </label>
+          </div>
+        )}
+        <div className="fat_btn">
+          <button className="button" type="button" onClick={onClose}>
+            Cancelar
+          </button>
+          <button className="button" type="submit">
+            Reservar
+          </button>
+        </div>
+      </form>
+    </div>
   );
 };
 

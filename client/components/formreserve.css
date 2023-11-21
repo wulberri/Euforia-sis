@@ -1,6 +1,22 @@
-form {
-    background-color: transparent;
-    margin: 50px 0;
+.fat_form {
+    backdrop-filter: blur(90px);
+    position: absolute;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    left: 0;
+    top: 0;
+    height: 100vh;
+}
+
+.formRe {
+    background-color: #fff;
+    height: auto;
+    display: flex;
+    border-radius: 10px;
+    padding: 30px;
+    box-shadow: 5px 5px 5px rgba(0, 0, 0, .1);
 }
 
 input, textarea {
@@ -41,6 +57,21 @@ textarea {
     justify-content: space-between;
     margin-top: 20px;
     width: 300px;
+}
+
+.schTitle {
+    text-align: center;
+    margin: 15px 0 10px 0;
+    font-style: italic;
+}
+
+.par {
+    /* background-color: teal; */
+    margin-bottom: 10px;
+}
+
+select.normal {
+    margin-left: 10px;
 }
 
 .button {
