@@ -87,3 +87,7 @@ select.normal {
     background-color: #455d7a;
     color: white
 }
+
+.response-error {
+    color: red;
+}
