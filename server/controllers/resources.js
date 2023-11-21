@@ -66,6 +66,16 @@ export async function allResources(req, res) {
 export const getUnitSchedule = async (req, res) => {
   const { unitNumber } = req.params;
 
+  const weekDays = [
+    "Lunes",
+    "Martes",
+    "Miércoles",
+    "Jueves",
+    "Viernes",
+    "Sábado",
+    "Domingo",
+  ];
+
   try {
     let [queryResult] = await pool.query(
       `SELECT * FROM horario_unidad LEFt JOIN unidad on horario_unidad.fk_num_unidad = unidad.num_unidad

@@ -33,7 +33,7 @@ function ResourcesTable({data, email}) {
               <th>ID</th>
               <th>Nombre</th>
               <th>Fecha y hora limite</th>
-              <th>Iniciar prestamo</th>
+              <th>Finalizar prestamo</th>
             </tr>
           </thead>
           <tbody>
