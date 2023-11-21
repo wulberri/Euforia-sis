@@ -1,11 +1,12 @@
 import "./resourcestable.css";
-import { getAllResources } from "../api/recursos.api";
+import { getAllResources, getUnitSchedule } from "../api/recursos.api";
 import {useEffect, useState} from "react";
 import AdFormEdit from './AdFormEdit';
 import AdFormCreate from './AdFormCreate';
 
 function ResourcesTable() {
     const [data, setData] = useState(null);
+    const [scheduleData, setScheduleData] = useState(null);
     const [formVisible, setFormVisible] = useState(false);
     const [formCreateVisible, setFormCreateVisible] = useState(false);
     const [formData, setFormData] = useState(null);
@@ -17,6 +18,12 @@ function ResourcesTable() {
                 setData(result);
             } catch (err){
                 console.error('Error al obtener los recursos:', err);
+            }
+            try {
+                const result = await getUnitSchedule(1);
+                setScheduleData(result.schedule);
+            } catch (err){
+                console.error('Error al obtener el horario de la unidad:', err);
             }
         };
         fetchData();
@@ -82,11 +89,13 @@ function ResourcesTable() {
         <AdFormEdit
           data={formData}
           onClose={closeForm}
+          unitSchedule={scheduleData}
         />
       )}
       {formCreateVisible && (
         <AdFormCreate
           onClose={closeCreateForm}
+          unitSchedule={scheduleData}
         />
       )}
     </div> 

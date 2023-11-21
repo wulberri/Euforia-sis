@@ -3,7 +3,7 @@ import React from 'react';
 import {useState} from "react";
 import { useContextUser } from "../context/UserContext.jsx";
 
-const FormReserve = ({onClose}) => {
+const FormReserve = ({onClose, unitSchedule}) => {
   const [selectedOption, setSelectedOption] = useState('');
   const [selectedStartHour, setSelectedStartHour] = useState('');
   const [selectedEndHour, setSelectedEndtHour] = useState('');
@@ -74,37 +74,37 @@ const FormReserve = ({onClose}) => {
           <div className="par">
             <label>
               Lunes:
-              <input className="normal" type="time" min="8:00:00" max="20:00:00" onChange="" />
-              <input className="normal" type="time" min="8:00:00" max="20:00:00" onChange="" />
+              <input className="normal" type="time" min={unitSchedule['Lunes'].start} max={unitSchedule['Lunes'].end} onChange="" />
+              <input className="normal" type="time" min={unitSchedule['Lunes'].start} max={unitSchedule['Lunes'].end} onChange="" />
             </label>
             <label>
               Martes:
-              <input className="normal" type="time" min="8:00:00" max="20:00:00" onChange="" />
-              <input className="normal" type="time" min="8:00:00" max="20:00:00" onChange="" />
+              <input className="normal" type="time" min={unitSchedule['Martes'].start} max={unitSchedule['Martes'].end} onChange="" />
+              <input className="normal" type="time" min={unitSchedule['Martes'].start} max={unitSchedule['Martes'].end} onChange="" />
             </label>
           </div>
           <div className="par">
             <label>
               Miércoles:
-              <input className="normal" type="time" min="8:00:00" max="20:00:00" onChange="" />
-              <input className="normal" type="time" min="8:00:00" max="20:00:00" onChange="" />
+              <input className="normal" type="time" min={unitSchedule['Miércoles'].start} max={unitSchedule['Miércoles'].end} onChange="" />
+              <input className="normal" type="time" min={unitSchedule['Miércoles'].start} max={unitSchedule['Miércoles'].end} onChange="" />
             </label>
             <label>
               Jueves:
-              <input className="normal" type="time" min="8:00:00" max="20:00:00" onChange="" />
-              <input className="normal" type="time" min="8:00:00" max="20:00:00" onChange="" />
+              <input className="normal" type="time" min={unitSchedule['Jueves'].start} max={unitSchedule['Jueves'].end} onChange="" />
+              <input className="normal" type="time" min={unitSchedule['Jueves'].start} max={unitSchedule['Jueves'].end} onChange="" />
             </label>
           </div>
           <div className="par">
             <label>
               Viernes:
-              <input className="normal" type="time" min="8:00:00" max="20:00:00" onChange="" />
-              <input className="normal" type="time" min="8:00:00" max="20:00:00" onChange="" />
+              <input className="normal" type="time" min={unitSchedule['Viernes'].start} max={unitSchedule['Viernes'].end} onChange="" />
+              <input className="normal" type="time" min={unitSchedule['Viernes'].start} max={unitSchedule['Viernes'].end} onChange="" />
             </label>
             <label>
               Sábado:
-              <input className="normal" type="time" min="8:00:00" max="20:00:00" onChange="" />
-              <input className="normal" type="time" min="8:00:00" max="20:00:00" onChange="" />
+              <input className="normal" type="time" min={unitSchedule['Sábado'].start} max={unitSchedule['Sábado'].end} onChange="" />
+              <input className="normal" type="time" min={unitSchedule['Sábado'].start} max={unitSchedule['Sábado'].end} onChange="" />
             </label>
           </div>
         </div>
