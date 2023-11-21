@@ -1,6 +1,6 @@
 import NavBar from "../components/NavBar";
 import AdReservesTable from "../components/AdReservesTable";
-import {useEffect, useState} from "react";
+import {useState} from "react";
 import { getEmailReserve } from "../api/reservas.api.js";
 import { useContextUser } from "../context/UserContext.jsx";
 
@@ -11,19 +11,15 @@ function Dashboard() {
 
 
   const fetchEmailReserve = async () => {
-            try {
-                const result = await getEmailReserve({
-                    "reserveOwnerMail": email,
-                }, getAccessToken());
-                setData(result);
-            } catch (err){
-                console.error('Error al obtener los recursos:', err);
-            }
+    try {
+      const result = await getEmailReserve({
+        "reserveOwnerMail": email,
+        }, getAccessToken());
+        setData(result);
+    } catch (err){
+        console.error('Error al obtener las reservas del usuario:', err);
+    }
   };
-
-  useEffect(() => {
-    console.log(data);
-  }, [data]);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -38,11 +34,11 @@ function Dashboard() {
     <>
       <NavBar />
       <h1>Reservas por Usuario</h1>
-      <div>
+      <div className="adreservesForm">
           <form onSubmit={handleSubmit}>
             <label>
               Email a buscar:
-              <input className="email" type="text" onChange={handleEmailChange} required/>
+              <input className="normal" type="email" onChange={handleEmailChange} required/>
             </label>
 
             <button className="button" type="submit">
@@ -50,8 +46,12 @@ function Dashboard() {
             </button>
           </form>
       </div>
-      {data !== null && (<p>{data[0].reserveID}</p>)}
-      {/* <AdReservesTable/> */}
+      {data && (
+        <AdReservesTable
+          data={data}
+          email={email}
+        />
+      )}
     </>
   );
 }
