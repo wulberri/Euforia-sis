@@ -16,6 +16,7 @@ const router = Router();
 router.get("/all-resources", allResources);
 router.get("/unit-schedule/:unitNumber", getUnitSchedule);
 router.get("/resource/:id", allResources);
+router.get("/only-resource/:id", getResourceExpanded);
 router.post("/", createResource);
 router.get("/:id", getResource);
 router.get("/", getResources);
