@@ -2,13 +2,39 @@ import "./formreserve.css";
 import { useState } from "react";
 import { createResourceRequest } from "../api/recursos.api.js";
 
-const FormReserve = ({onClose, unitSchedule}) => {
-  const [selectedOption, setSelectedOption] = useState('');
-  const [selectedStartHour, setSelectedStartHour] = useState('');
-  const [selectedEndHour, setSelectedEndtHour] = useState('');
-  const [horaInicial, setHoraInicial] = useState('');
-  const [horaFinal, setHoraFinal] = useState('');
+const FormReserve = ({onClose, unitSchedule }) => {
+  unitSchedule = {
+    "Lunes": {
+      "start": "06:00:00",
+      "end": "20:00:00"
+    },
+    "Martes": {
+      "start": "06:00:00",
+      "end": "20:00:00"
+    },
+    "Miércoles": {
+      "start": "06:00:00",
+      "end": "20:00:00"
+    },
+    "Jueves": {
+      "start": "06:00:00",
+      "end": "20:00:00"
+    },
+    "Viernes": {
+      "start": "06:00:00",
+      "end": "20:00:00"
+    },
+    "Sábado": {
+      "start": "06:00:00",
+      "end": "18:00:00"
+    },
+    "Domingo": {
+      "start": "11:00:00",
+      "end": "16:00:00"
+    }
+  }
 
+  const [selectedOption, setSelectedOption] = useState('');
 
   const [formData, setFormData] = useState({
     unidad: 1,

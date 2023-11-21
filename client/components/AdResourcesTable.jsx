@@ -21,6 +21,7 @@ function ResourcesTable() {
             }
             try {
                 const result = await getUnitSchedule(1);
+                console.log(result.schedule);
                 setScheduleData(result.schedule);
             } catch (err){
                 console.error('Error al obtener el horario de la unidad:', err);
