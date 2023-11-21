@@ -1,0 +1,58 @@
+form {
+    background-color: transparent;
+    margin: 50px 0;
+}
+
+input, textarea {
+    margin-left: 10px;
+}
+
+label{
+    margin-right: 20px;
+    margin-bottom: 10px;
+}
+
+textarea {
+    resize: none;
+}
+
+.textarea {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.box {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.normal {
+    height: 30px;
+}
+
+.normal:focus, textarea:focus {
+    outline: none;
+}
+
+.fat_btn {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+    width: 300px;
+}
+
+.button {
+    border: 0;
+    cursor: pointer;
+    background-color: #5585b5;
+    padding: 10px 30px; 
+    border-radius: 5px;
+    transition: all .3s ease-in-out;
+}
+
+.button:hover {
+    background-color: #455d7a;
+    color: white
+}
