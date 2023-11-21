@@ -8,6 +8,7 @@ import Usuarios from '../pages/Usuarios';
 import Prestamos from '../pages/Prestamos'
 import Recursos from '../pages/Recursos'
 import Adrecursos from '../pages/AdRecursos'
+import Adreservas from '../pages/AdReservas'
 
 function App() {
   return (
@@ -17,6 +18,9 @@ function App() {
         <Route path="/" element={<Sign />} />
         <Route element={<PrivateRoute />}>
           <Route path="/reservas" element={<Reservas />} />
+        </Route>
+        <Route element={<PrivateRouteAdmin />}>
+          <Route path="/adreservas" element={<Adreservas />} />
         </Route>
         <Route element={<PrivateRouteAdmin />}>
           <Route path="/usuarios" element={<Usuarios />} />

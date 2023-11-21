@@ -40,7 +40,11 @@ function NavBar() {
         ):(
           <Link to="/adrecursos">Recursos</Link>
         )}
-        <Link to="/reservas">Reservas</Link>
+        {getUser().rol === "usuario" ? (
+          <Link to="/reservas">Reservas</Link>
+        ):(
+          <Link to="/adreservas">Reservas</Link>
+        )}
         {getUser().rol === "administrador" && (
           <Link to="/prestamos">Prestamos</Link>
         )}
