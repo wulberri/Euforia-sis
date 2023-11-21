@@ -6,7 +6,7 @@ td {
     cursor:auto;
 }
 
-.edit, .delete {
+.edit, .delete, .accept {
     cursor: pointer;
     font-size: 1em;
 }
@@ -18,6 +18,10 @@ td {
 
 .delete {
     color: #ee6055;
+}
+
+.accept {
+    color: #60d394;
 }
 
 .createBtn {
@@ -34,4 +38,17 @@ td {
 .createBtn:hover {
     background-color: #455d7a;
     color: white
+}
+
+.errReserve {
+    text-align: center;
+    font-weight: 600;
+    color: #ee6055;
+}
+
+.successReserve {
+    margin-top: 20px;
+    text-align: center;
+    font-weight: 600;
+    color: #60d394;
 }

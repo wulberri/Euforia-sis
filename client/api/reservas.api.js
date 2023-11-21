@@ -11,3 +11,13 @@ export const doReserve = async (reserve, accessToken) => {
   });
   return response.data;
 };
+
+export const getEmailReserve = async (email, accessToken) => {
+  const response = await axios.post(`${API_RESOURCE}/active-reserves`, email,
+  {
+    headers: {
+      authorization: accessToken,
+    },
+  });
+  return response.data;
+}

@@ -3,7 +3,11 @@ import { useEffect } from "react";
 import { useState } from "react";
 import { getResourceRequest, updateResourceRequest } from "../api/recursos.api";
 
-const FormReserve = ({ data, onClose }) => {
+const FormReserve = ({ data, onClose, unitSchedule }) => {
+  const [selectedStartHour, setSelectedStartHour] = useState('');
+  const [selectedEndHour, setSelectedEndtHour] = useState('');
+  const [horaInicial, setHoraInicial] = useState('');
+  const [horaFinal, setHoraFinal] = useState('');
   const [formData, setFormData] = useState({
     unidad: 1,
     nombre: "",
@@ -149,8 +153,8 @@ const FormReserve = ({ data, onClose }) => {
                 value={formData.horario.Lunes.hora_inicio}
                 className="normal"
                 type="time"
-                min="8:00:00"
-                max="20:00:00"
+                min={unitSchedule['Lunes'].start}
+                max={unitSchedule['Lunes'].end}
                 onChange={handleChange}
               />
               <input
@@ -158,8 +162,8 @@ const FormReserve = ({ data, onClose }) => {
                 value={formData.horario.Lunes.hora_cierre}
                 className="normal"
                 type="time"
-                min="8:00:00"
-                max="20:00:00"
+                min={unitSchedule['Lunes'].start}
+                max={unitSchedule['Lunes'].end}
                 onChange={handleChange}
               />
             </label>
@@ -170,8 +174,8 @@ const FormReserve = ({ data, onClose }) => {
                 value={formData.horario.Martes.hora_inicio}
                 className="normal"
                 type="time"
-                min="8:00:00"
-                max="20:00:00"
+                min={unitSchedule['Martes'].start}
+                max={unitSchedule['Martes'].end}
                 onChange={handleChange}
               />
               <input
@@ -179,8 +183,8 @@ const FormReserve = ({ data, onClose }) => {
                 value={formData.horario.Martes.hora_cierre}
                 className="normal"
                 type="time"
-                min="8:00:00"
-                max="20:00:00"
+                min={unitSchedule['Martes'].start}
+                max={unitSchedule['Martes'].end}
                 onChange={handleChange}
               />
             </label>
@@ -193,8 +197,8 @@ const FormReserve = ({ data, onClose }) => {
                 value={formData.horario.Miercoles.hora_inicio}
                 className="normal"
                 type="time"
-                min="8:00:00"
-                max="20:00:00"
+                min={unitSchedule['Miércoles'].start}
+                max={unitSchedule['Miércoles'].end}
                 onChange={handleChange}
               />
               <input
@@ -202,8 +206,8 @@ const FormReserve = ({ data, onClose }) => {
                 value={formData.horario.Miercoles.hora_cierre}
                 className="normal"
                 type="time"
-                min="8:00:00"
-                max="20:00:00"
+                min={unitSchedule['Miércoles'].start}
+                max={unitSchedule['Miércoles'].end}
                 onChange={handleChange}
               />
             </label>
@@ -214,8 +218,8 @@ const FormReserve = ({ data, onClose }) => {
                 value={formData.horario.Jueves.hora_inicio}
                 className="normal"
                 type="time"
-                min="8:00:00"
-                max="20:00:00"
+                min={unitSchedule['Jueves'].start}
+                max={unitSchedule['Jueves'].end}
                 onChange={handleChange}
               />
               <input
@@ -223,8 +227,8 @@ const FormReserve = ({ data, onClose }) => {
                 value={formData.horario.Jueves.hora_cierre}
                 className="normal"
                 type="time"
-                min="8:00:00"
-                max="20:00:00"
+                min={unitSchedule['Jueves'].start}
+                max={unitSchedule['Jueves'].end}
                 onChange={handleChange}
               />
             </label>
@@ -237,8 +241,8 @@ const FormReserve = ({ data, onClose }) => {
                 value={formData.horario.Viernes.hora_inicio}
                 className="normal"
                 type="time"
-                min="8:00:00"
-                max="20:00:00"
+                min={unitSchedule['Viernes'].start}
+                max={unitSchedule['Viernes'].end}
                 onChange={handleChange}
               />
               <input
@@ -246,8 +250,8 @@ const FormReserve = ({ data, onClose }) => {
                 value={formData.horario.Viernes.hora_cierre}
                 className="normal"
                 type="time"
-                min="8:00:00"
-                max="20:00:00"
+                min={unitSchedule['Viernes'].start}
+                max={unitSchedule['Viernes'].end}
                 onChange={handleChange}
               />
             </label>
@@ -258,8 +262,8 @@ const FormReserve = ({ data, onClose }) => {
                 value={formData.horario.Sabado.hora_inicio}
                 className="normal"
                 type="time"
-                min="8:00:00"
-                max="20:00:00"
+                min={unitSchedule['Sábado'].start}
+                max={unitSchedule['Sábado'].end}
                 onChange={handleChange}
               />
               <input
@@ -267,8 +271,8 @@ const FormReserve = ({ data, onClose }) => {
                 value={formData.horario.Sabado.hora_cierre}
                 className="normal"
                 type="time"
-                min="8:00:00"
-                max="20:00:00"
+                min={unitSchedule['Sábado'].start}
+                max={unitSchedule['Sábado'].end}
                 onChange={handleChange}
               />
             </label>

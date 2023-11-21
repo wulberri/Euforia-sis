@@ -1,14 +1,33 @@
 import "./resourcestable.css";
-import { deleteResourceRequest, getAllResources } from "../api/recursos.api";
-import { useEffect, useState } from "react";
-import AdFormEdit from "./AdFormEdit";
-import AdFormCreate from "./AdFormCreate";
+import { getAllResources, getUnitSchedule, deleteResourceRequest } from "../api/recursos.api";
+import {useEffect, useState} from "react";
+import AdFormEdit from './AdFormEdit';
+import AdFormCreate from './AdFormCreate';
 
 function ResourcesTable() {
-  const [data, setData] = useState(null);
-  const [formVisible, setFormVisible] = useState(false);
-  const [formCreateVisible, setFormCreateVisible] = useState(false);
-  const [formData, setFormData] = useState(null);
+    const [data, setData] = useState(null);
+    const [scheduleData, setScheduleData] = useState(null);
+    const [formVisible, setFormVisible] = useState(false);
+    const [formCreateVisible, setFormCreateVisible] = useState(false);
+    const [formData, setFormData] = useState(null);
+    
+    useEffect(()=>{
+        const fetchData = async () => {
+            try {
+                const result = await getAllResources();
+                setData(result);
+            } catch (err){
+                console.error('Error al obtener los recursos:', err);
+            }
+            try {
+                const result = await getUnitSchedule(1);
+                setScheduleData(result.schedule);
+            } catch (err){
+                console.error('Error al obtener el horario de la unidad:', err);
+            }
+        };
+        fetchData();
+    },[]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -115,7 +134,17 @@ function ResourcesTable() {
         <p>Cargando...</p>
       )}
       {formVisible && formData && (
-        <AdFormEdit data={formData} onClose={closeForm} />
+        <AdFormEdit
+          data={formData}
+          onClose={closeForm}
+          unitSchedule={scheduleData}
+        />
+      )}
+      {formCreateVisible && (
+        <AdFormCreate
+          onClose={closeCreateForm}
+          unitSchedule={scheduleData}
+        />
       )}
       {formCreateVisible && <AdFormCreate onClose={closeCreateForm} />}
     </div>

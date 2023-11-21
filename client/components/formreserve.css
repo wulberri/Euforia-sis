@@ -87,3 +87,15 @@ select.normal {
     background-color: #455d7a;
     color: white
 }
+
+.response-error {
+    color: #ee6055;
+}
+
+.adreservesForm {
+    margin-bottom: 30px;
+}
+
+.adreservesForm form {
+    background-color: transparent;
+}
