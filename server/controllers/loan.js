@@ -96,7 +96,7 @@ export const endLoan = async (req, res) =>  {
             [formatDate(now), req.user.id_usuario, reserveID]);
         if(resultQuery.affectedRows == 1){
             if(timeDifference > 5){
-                return res.status(400).json({message: 'Prestamo terminado con retraso'})
+                return res.status(200).json({message: 'Prestamo terminado con retraso'})
             }
             else{
                 return res.status(200).json({ message: 'Prestamo finalizado con exito' });

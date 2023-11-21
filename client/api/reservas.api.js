@@ -11,3 +11,23 @@ export const doReserve = async (reserve, accessToken) => {
   });
   return response.data;
 };
+
+export const getReserveHistory = async (accessToken) => {
+  const response = await axios.post(`${API_RESOURCE}/history-reserves`,{},
+  {
+    headers: {
+      authorization: accessToken,
+    },
+  });
+  return response.data;
+};
+
+export const deleteReserve = async (reserveID, accessToken) => {
+  const response = await axios.delete(`${API_RESOURCE}/reserve/${reserveID}`,
+  {
+    headers: {
+      authorization: accessToken,
+    },
+  });
+  return response.data;
+};

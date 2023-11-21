@@ -170,3 +170,29 @@ export const historyReserves = async (req, res) => {
     return res.status(500).json({ error: error.message });
   }
 }
+
+export const deleteReserve = async (req, res) => {
+  let reserveID = req.params.id;
+  const connection = await pool.getConnection();
+  try {
+    await connection.beginTransaction();
+    let [deleted] = await connection.query('DELETE FROM reserva WHERE `reserva`.`id_reserva` = ?', [reserveID]);
+    if(deleted.affectedRows == 1){
+      await connection.commit();
+    }
+    else {
+      await connection.rollback();
+      return res.status(500).json({message: `No se pudo eliminar la reserva`})
+    }
+  } catch (e) {
+    if(typeof(e.code) == 'string' && e.code.startsWith('ER_ROW_IS_REFERENCED')){
+      return res.status(409).json({message: 'No se puede eliminar una reserva que haya iniciado'})
+    }
+    return res.status(500).json({message: `No se pudo eliminar la reserva`})
+  }
+  finally {
+    await connection.release(); 
+  }
+  
+  return res.status(200).json({message: `Reserva ${reserveID} eliminada con exito`})
+}
