@@ -1,56 +1,146 @@
-import "./formreserve.css"
-import React from 'react';
-import {useState} from "react";
-import { useContextUser } from "../context/UserContext.jsx";
+import "./formreserve.css";
+import { useEffect } from "react";
+import { useState } from "react";
+import { getResourceRequest, updateResourceRequest } from "../api/recursos.api";
 
 const FormReserve = ({ data, onClose, unitSchedule }) => {
   const [selectedStartHour, setSelectedStartHour] = useState('');
   const [selectedEndHour, setSelectedEndtHour] = useState('');
   const [horaInicial, setHoraInicial] = useState('');
   const [horaFinal, setHoraFinal] = useState('');
+  const [formData, setFormData] = useState({
+    unidad: 1,
+    nombre: "",
+    descripcion: "",
+    tipo: "",
+    aforo: "",
+    cantidad_puestos: "",
+    material_puestos: "madera",
+    tipo_patio: "",
+    horario: {
+      Lunes: { hora_inicio: "", hora_cierre: "" },
+      Martes: { hora_inicio: "", hora_cierre: "" },
+      Miercoles: { hora_inicio: "", hora_cierre: "" },
+      Jueves: { hora_inicio: "", hora_cierre: "" },
+      Viernes: { hora_inicio: "", hora_cierre: "" },
+      Sabado: { hora_inicio: "", hora_cierre: "" },
+    },
+  });
 
-  const {getAccessToken} = useContextUser();
+  useEffect(() => {
+    return async () => {
+      const result = await getResourceRequest(data.id);
+      setFormData(result[0]);
+    };
+  }, [data.id]);
 
-  const handleSubmit = async (event) =>{
-   /*LOGICA SUBMIT*/ 
-  }
+  const handleChange = ({ target: { name, value } }) => {
+    if (name.includes("hora")) {
+      const [day, field] = name.split("-");
+      setFormData({
+        ...formData,
+        horario: {
+          ...formData.horario,
+          [day]: {
+            ...formData.horario[day],
+            [field]: value + ":00",
+          },
+        },
+      });
+    } else {
+      setFormData({ ...formData, [name]: value });
+    }
+  };
+
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    try {
+      await updateResourceRequest(data.id, formData)
+      onClose();
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   return (
     <div className="fat_form">
       <form className="formRe" onSubmit={handleSubmit}>
         <label>
           Unidad:
-          <input className="normal" type="number" min="1" defaultValue="1" readOnly/>
+          <input
+            name="unidad"
+            value={formData.unidad}
+            className="normal"
+            type="number"
+            min="1"
+            readOnly
+            onChange={handleChange}
+          />
         </label>
         <label>
           Nombre:
-          <input className="normal" type="text" defaultValue={data.name} />
+          <input
+            name="nombre"
+            value={formData.nombre}
+            className="normal"
+            type="text"
+            onChange={handleChange}
+          />
         </label>
-        {data.type === 'auditorium' ? (
+        {data.type === "auditorium" ? (
           <label>
-              Aforo:
-              <input className="normal" type="number" defaultValue={data.aforo} />
+            Aforo:
+            <input
+              name="aforo"
+              value={formData.aforo}
+              className="normal"
+              type="number"
+              onChange={handleChange}
+            />
           </label>
-        ): data.type === 'classroom' ? (
+        ) : data.type === "classroom" ? (
           <>
-              <label>
-                  Material de Silla:
-                  <input className="normal" type="text" defaultValue={data.chairMaterial} />
-              </label>
-              <label>
-                  Cantidad de Sillas:
-                  <input className="normal" type="number" min="1" defaultValue={data.chairAmount} />
-              </label>
+            <label>
+              Material de Silla:
+              <input
+                name="material_puestos"
+                value={formData.material_puestos}
+                className="normal"
+                type="text"
+                onChange={handleChange}
+              />
+            </label>
+            <label>
+              Cantidad de Sillas:
+              <input
+                name="cantidad_puestos"
+                value={formData.cantidad_puestos}
+                className="normal"
+                type="number"
+                min="1"
+                onChange={handleChange}
+              />
+            </label>
           </>
-        ):(
+        ) : (
           <label>
-              Estilo:
-              <input className="normal" type="text" defaultValue={data.yardType} />
+            Estilo:
+            <input
+              name="tipo_patio"
+              value={formData.tipo_patio}
+              className="normal"
+              type="text"
+              onChange={handleChange}
+            />
           </label>
         )}
         <label className="textarea">
           Descripción:
-          <textarea defaultValue={data.description} />
+          <textarea
+            name="descripcion"
+            value={formData.descripcion}
+            onChange={handleChange}
+          />
         </label>
 
         <div className="schedule">
@@ -58,37 +148,133 @@ const FormReserve = ({ data, onClose, unitSchedule }) => {
           <div className="par">
             <label>
               Lunes:
-              <input className="normal" type="time" min={unitSchedule['Lunes'].start} max={unitSchedule['Lunes'].end} defaultValue={data.schedule.Lunes.start} onChange="" />
-              <input className="normal" type="time" min={unitSchedule['Lunes'].start} max={unitSchedule['Lunes'].end} defaultValue={data.schedule.Lunes.end} onChange="" />
+              <input
+                name="Lunes-hora_inicio"
+                value={formData.horario.Lunes.hora_inicio}
+                className="normal"
+                type="time"
+                min={unitSchedule['Lunes'].start}
+                max={unitSchedule['Lunes'].end}
+                onChange={handleChange}
+              />
+              <input
+                name="Lunes-hora_cierre"
+                value={formData.horario.Lunes.hora_cierre}
+                className="normal"
+                type="time"
+                min={unitSchedule['Lunes'].start}
+                max={unitSchedule['Lunes'].end}
+                onChange={handleChange}
+              />
             </label>
             <label>
               Martes:
-              <input className="normal" type="time" min={unitSchedule['Martes'].start} max={unitSchedule['Martes'].end} defaultValue={data.schedule.Martes.start} onChange="" />
-              <input className="normal" type="time" min={unitSchedule['Martes'].start} max={unitSchedule['Martes'].end} defaultValue={data.schedule.Martes.end} onChange="" />
+              <input
+                name="Martes-hora_inicio"
+                value={formData.horario.Martes.hora_inicio}
+                className="normal"
+                type="time"
+                min={unitSchedule['Martes'].start}
+                max={unitSchedule['Martes'].end}
+                onChange={handleChange}
+              />
+              <input
+                name="Martes-hora_cierre"
+                value={formData.horario.Martes.hora_cierre}
+                className="normal"
+                type="time"
+                min={unitSchedule['Martes'].start}
+                max={unitSchedule['Martes'].end}
+                onChange={handleChange}
+              />
             </label>
           </div>
           <div className="par">
             <label>
               Miércoles:
-              <input className="normal" type="time" min={unitSchedule['Miércoles'].start} max={unitSchedule['Miércoles'].end} defaultValue={data.schedule.Miércoles.start} onChange="" />
-              <input className="normal" type="time" min={unitSchedule['Miércoles'].start} max={unitSchedule['Miércoles'].end} defaultValue={data.schedule.Miércoles.end} onChange="" />
+              <input
+                name="Miercoles-hora_inicio"
+                value={formData.horario.Miercoles.hora_inicio}
+                className="normal"
+                type="time"
+                min={unitSchedule['Miércoles'].start}
+                max={unitSchedule['Miércoles'].end}
+                onChange={handleChange}
+              />
+              <input
+                name="Miercoles-hora_cierre"
+                value={formData.horario.Miercoles.hora_cierre}
+                className="normal"
+                type="time"
+                min={unitSchedule['Miércoles'].start}
+                max={unitSchedule['Miércoles'].end}
+                onChange={handleChange}
+              />
             </label>
             <label>
               Jueves:
-              <input className="normal" type="time" min={unitSchedule['Jueves'].start} max={unitSchedule['Jueves'].end} defaultValue={data.schedule.Jueves.start} onChange="" />
-              <input className="normal" type="time" min={unitSchedule['Jueves'].start} max={unitSchedule['Jueves'].end} defaultValue={data.schedule.Jueves.end} onChange="" />
+              <input
+                name="Jueves-hora_inicio"
+                value={formData.horario.Jueves.hora_inicio}
+                className="normal"
+                type="time"
+                min={unitSchedule['Jueves'].start}
+                max={unitSchedule['Jueves'].end}
+                onChange={handleChange}
+              />
+              <input
+                name="Jueves-hora_cierre"
+                value={formData.horario.Jueves.hora_cierre}
+                className="normal"
+                type="time"
+                min={unitSchedule['Jueves'].start}
+                max={unitSchedule['Jueves'].end}
+                onChange={handleChange}
+              />
             </label>
           </div>
           <div className="par">
             <label>
               Viernes:
-              <input className="normal" type="time" min={unitSchedule['Viernes'].start} max={unitSchedule['Viernes'].end} defaultValue={data.schedule.Viernes.start} onChange="" />
-              <input className="normal" type="time" min={unitSchedule['Viernes'].start} max={unitSchedule['Viernes'].end} defaultValue={data.schedule.Viernes.end} onChange="" />
+              <input
+                name="Viernes-hora_inicio"
+                value={formData.horario.Viernes.hora_inicio}
+                className="normal"
+                type="time"
+                min={unitSchedule['Viernes'].start}
+                max={unitSchedule['Viernes'].end}
+                onChange={handleChange}
+              />
+              <input
+                name="Viernes-hora_cierre"
+                value={formData.horario.Viernes.hora_cierre}
+                className="normal"
+                type="time"
+                min={unitSchedule['Viernes'].start}
+                max={unitSchedule['Viernes'].end}
+                onChange={handleChange}
+              />
             </label>
             <label>
               Sábado:
-              <input className="normal" type="time" min={unitSchedule['Sábado'].start} max={unitSchedule['Sábado'].end} defaultValue={data.schedule.Sábado.start} onChange="" />
-              <input className="normal" type="time" min={unitSchedule['Sábado'].start} max={unitSchedule['Sábado'].end} defaultValue={data.schedule.Sábado.end} onChange="" />
+              <input
+                name="Sabado-hora_inicio"
+                value={formData.horario.Sabado.hora_inicio}
+                className="normal"
+                type="time"
+                min={unitSchedule['Sábado'].start}
+                max={unitSchedule['Sábado'].end}
+                onChange={handleChange}
+              />
+              <input
+                name="Sabado-hora_cierre"
+                value={formData.horario.Sabado.hora_cierre}
+                className="normal"
+                type="time"
+                min={unitSchedule['Sábado'].start}
+                max={unitSchedule['Sábado'].end}
+                onChange={handleChange}
+              />
             </label>
           </div>
         </div>

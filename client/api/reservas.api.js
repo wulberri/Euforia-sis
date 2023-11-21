@@ -12,8 +12,20 @@ export const doReserve = async (reserve, accessToken) => {
   return response.data;
 };
 
+
 export const getReserveHistory = async (accessToken) => {
   const response = await axios.post(`${API_RESOURCE}/history-reserves`,{},
+  {
+    headers: {
+      authorization: accessToken,
+    },
+  });
+  return response.data;
+}
+
+export const getEmailReserve = async (email, accessToken) => {
+  const response = await axios.post(`${API_RESOURCE}/active-reserves`, email,
+
   {
     headers: {
       authorization: accessToken,
@@ -31,3 +43,4 @@ export const deleteReserve = async (reserveID, accessToken) => {
   });
   return response.data;
 };
+

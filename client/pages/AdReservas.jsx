@@ -1,7 +1,7 @@
 import NavBar from "../components/NavBar";
-import AdLoanTable from "../components/AdLoanTable";
+import AdReservesTable from "../components/AdReservesTable";
 import {useState} from "react";
-import { getActiveLoans } from "../api/prestamos.api";
+import { getEmailReserve } from "../api/reservas.api.js";
 import { useContextUser } from "../context/UserContext.jsx";
 
 function Dashboard() {  
@@ -10,9 +10,9 @@ function Dashboard() {
   const [email, setEmail] = useState('');
 
 
-  const fetchEmailLoan = async () => {
+  const fetchEmailReserve = async () => {
     try {
-      const result = await getActiveLoans({
+      const result = await getEmailReserve({
         "reserveOwnerMail": email,
         }, getAccessToken());
         setData(result);
@@ -23,7 +23,7 @@ function Dashboard() {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    await fetchEmailLoan();
+    await fetchEmailReserve();
   };
 
   const handleEmailChange = (event) => {
@@ -33,7 +33,7 @@ function Dashboard() {
   return (
     <>
       <NavBar />
-      <h1>Prestamos por Usuario</h1>
+      <h1>Reservas por Usuario</h1>
       <div className="adreservesForm">
           <form onSubmit={handleSubmit}>
             <label>
@@ -47,7 +47,7 @@ function Dashboard() {
           </form>
       </div>
       {data && (
-        <AdLoanTable
+        <AdReservesTable
           data={data}
           email={email}
         />

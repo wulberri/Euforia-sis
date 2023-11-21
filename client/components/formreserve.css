@@ -89,5 +89,13 @@ select.normal {
 }
 
 .response-error {
-    color: red;
+    color: #ee6055;
+}
+
+.adreservesForm {
+    margin-bottom: 30px;
+}
+
+.adreservesForm form {
+    background-color: transparent;
 }
