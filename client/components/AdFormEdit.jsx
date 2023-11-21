@@ -3,14 +3,13 @@ import React from 'react';
 import {useState} from "react";
 import { useContextUser } from "../context/UserContext.jsx";
 
-const FormReserve = ({ data, onClose }) => {
+const FormReserve = ({ data, onClose, unitSchedule }) => {
   const [selectedStartHour, setSelectedStartHour] = useState('');
   const [selectedEndHour, setSelectedEndtHour] = useState('');
   const [horaInicial, setHoraInicial] = useState('');
   const [horaFinal, setHoraFinal] = useState('');
 
   const {getAccessToken} = useContextUser();
-
 
   const handleSubmit = async (event) =>{
    /*LOGICA SUBMIT*/ 
@@ -59,37 +58,37 @@ const FormReserve = ({ data, onClose }) => {
           <div className="par">
             <label>
               Lunes:
-              <input className="normal" type="time" min="8:00:00" max="20:00:00" defaultValue={data.schedule.Lunes.start} onChange="" />
-              <input className="normal" type="time" min="8:00:00" max="20:00:00" defaultValue={data.schedule.Lunes.end} onChange="" />
+              <input className="normal" type="time" min={unitSchedule['Lunes'].start} max={unitSchedule['Lunes'].end} defaultValue={data.schedule.Lunes.start} onChange="" />
+              <input className="normal" type="time" min={unitSchedule['Lunes'].start} max={unitSchedule['Lunes'].end} defaultValue={data.schedule.Lunes.end} onChange="" />
             </label>
             <label>
               Martes:
-              <input className="normal" type="time" min="8:00:00" max="20:00:00" defaultValue={data.schedule.Martes.start} onChange="" />
-              <input className="normal" type="time" min="8:00:00" max="20:00:00" defaultValue={data.schedule.Martes.end} onChange="" />
+              <input className="normal" type="time" min={unitSchedule['Martes'].start} max={unitSchedule['Martes'].end} defaultValue={data.schedule.Martes.start} onChange="" />
+              <input className="normal" type="time" min={unitSchedule['Martes'].start} max={unitSchedule['Martes'].end} defaultValue={data.schedule.Martes.end} onChange="" />
             </label>
           </div>
           <div className="par">
             <label>
               Miércoles:
-              <input className="normal" type="time" min="8:00:00" max="20:00:00" defaultValue={data.schedule.Miércoles.start} onChange="" />
-              <input className="normal" type="time" min="8:00:00" max="20:00:00" defaultValue={data.schedule.Miércoles.end} onChange="" />
+              <input className="normal" type="time" min={unitSchedule['Miércoles'].start} max={unitSchedule['Miércoles'].end} defaultValue={data.schedule.Miércoles.start} onChange="" />
+              <input className="normal" type="time" min={unitSchedule['Miércoles'].start} max={unitSchedule['Miércoles'].end} defaultValue={data.schedule.Miércoles.end} onChange="" />
             </label>
             <label>
               Jueves:
-              <input className="normal" type="time" min="8:00:00" max="20:00:00" defaultValue={data.schedule.Jueves.start} onChange="" />
-              <input className="normal" type="time" min="8:00:00" max="20:00:00" defaultValue={data.schedule.Jueves.end} onChange="" />
+              <input className="normal" type="time" min={unitSchedule['Jueves'].start} max={unitSchedule['Jueves'].end} defaultValue={data.schedule.Jueves.start} onChange="" />
+              <input className="normal" type="time" min={unitSchedule['Jueves'].start} max={unitSchedule['Jueves'].end} defaultValue={data.schedule.Jueves.end} onChange="" />
             </label>
           </div>
           <div className="par">
             <label>
               Viernes:
-              <input className="normal" type="time" min="8:00:00" max="20:00:00" defaultValue={data.schedule.Viernes.start} onChange="" />
-              <input className="normal" type="time" min="8:00:00" max="20:00:00" defaultValue={data.schedule.Viernes.end} onChange="" />
+              <input className="normal" type="time" min={unitSchedule['Viernes'].start} max={unitSchedule['Viernes'].end} defaultValue={data.schedule.Viernes.start} onChange="" />
+              <input className="normal" type="time" min={unitSchedule['Viernes'].start} max={unitSchedule['Viernes'].end} defaultValue={data.schedule.Viernes.end} onChange="" />
             </label>
             <label>
               Sábado:
-              <input className="normal" type="time" min="8:00:00" max="20:00:00" defaultValue={data.schedule.Sábado.start} onChange="" />
-              <input className="normal" type="time" min="8:00:00" max="20:00:00" defaultValue={data.schedule.Sábado.end} onChange="" />
+              <input className="normal" type="time" min={unitSchedule['Sábado'].start} max={unitSchedule['Sábado'].end} defaultValue={data.schedule.Sábado.start} onChange="" />
+              <input className="normal" type="time" min={unitSchedule['Sábado'].start} max={unitSchedule['Sábado'].end} defaultValue={data.schedule.Sábado.end} onChange="" />
             </label>
           </div>
         </div>
