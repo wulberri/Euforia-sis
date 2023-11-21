@@ -1,8 +1,5 @@
 import { pool } from "../database/db.js";
 
-const weekDays = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"];
-
-
 export async function allResources(req, res) {
   let [resources] = await pool.query(
     `SELECT
@@ -16,88 +13,7 @@ export async function allResources(req, res) {
     LEFT JOIN patio ON recurso.pk_id_recurso = patio.pk_fk_id_recurso 
       AND recurso.pk_fk_num_unidad = patio.pk_fk_num_unidad
     INNER JOIN horario_recurso ON horario_recurso.fk_num_unidad = recurso.pk_fk_num_unidad
-    AND horario_recurso.fk_id_recurso = recurso.pk_id_recurso;`);
-
-  let simplifiedResources = []
-  resources = resources.map((resource)=>{
-    let lastResource = simplifiedResources[simplifiedResources.length-1];
-    let scheduleKey = weekDays[resource.dia-1]
-    if(simplifiedResources.length == 0 || lastResource.id != resource.pk_id_recurso){
-      let simplified = {
-        id: resource.pk_id_recurso,
-        unidNumber: resource.pk_fk_num_unidad,
-        name: resource.nombre,
-        description: resource.descripcion,
-      };
-      if(resource.aforo){
-        simplified.type = 'auditorium';
-        simplified.aforo = resource.aforo;
-      }
-      else if(resource.material_puestos){
-        simplified.type = 'classroom';
-        simplified.chairMaterial = resource.material_puestos;
-        simplified.chairAmount = resource.cantidad_puestos;
-      }
-      else {
-        simplified.type = 'yard';
-        simplified.yardType = resource.tipo_patio;
-      }
-      simplified.schedule = {};
-      lastResource = simplified
-      simplifiedResources.push(simplified)
-    }
-    lastResource.schedule[scheduleKey] = {start: resource.hora_inicio, end: resource.hora_cierre}
-  })
-  
-  return res.status(200).json(simplifiedResources);
-
-}
-
-export const getUnitSchedule = async (req, res)=>{
-  const {unitNumber} = req.params;
-
-  try {
-    let [queryResult] = await pool.query(
-      `SELECT * FROM horario_unidad LEFt JOIN unidad on horario_unidad.fk_num_unidad = unidad.num_unidad
-      WHERE fk_num_unidad = ?`,
-      [unitNumber]
-    );
-    if(queryResult.length == 0){
-      return res.status(500).json({ error: 'No hay un horario para la unidad' });
-    }
-    let schedules = {}
-    for(let schedule of queryResult){
-      let day = weekDays[schedule.dia-1]
-      let horary = {
-        start: schedule.hora_inicio,
-        end: schedule.hora_cierre
-      }
-      schedules[day] = horary
-    }
-    return res.status(200).json({ unidNumber: unitNumber, name: queryResult[0].nombre, schedule: schedules});
-  } catch (error) {
-    return res.status(500).json({ error: error.message });
-  }
-
-}
-
-export async function getResourceExpanded(req, res) {
-  const id = req.params.id;
-  let [resource] = await pool.query(
-    `SELECT
-    recurso.*, auditorio.aforo, aula.cantidad_puestos, aula.material_puestos, patio.tipo_patio,
-    horario_recurso.dia, horario_recurso.hora_inicio, horario_recurso.hora_cierre
-    from recurso 
-    LEFT JOIN auditorio ON recurso.pk_id_recurso = auditorio.pk_fk_id_recurso 
-      AND recurso.pk_fk_num_unidad = auditorio.pk_fk_num_unidad 
-    LEFT JOIN aula ON recurso.pk_id_recurso = aula.pk_fk_id_recurso 
-      AND recurso.pk_fk_num_unidad = aula.pk_fk_num_unidad 
-    LEFT JOIN patio ON recurso.pk_id_recurso = patio.pk_fk_id_recurso 
-      AND recurso.pk_fk_num_unidad = patio.pk_fk_num_unidad
-    INNER JOIN horario_recurso ON horario_recurso.fk_num_unidad = recurso.pk_fk_num_unidad
-    AND horario_recurso.fk_id_recurso = recurso.pk_id_recurso 
-    WHERE recurso.pk_id_recurso = (?);`,
-    [id]
+    AND horario_recurso.fk_id_recurso = recurso.pk_id_recurso;`
   );
 
   const weekDays = [
@@ -110,10 +26,8 @@ export async function getResourceExpanded(req, res) {
     "Domingo",
   ];
 
-  console.log(resource);
-
   let simplifiedResources = [];
-  resource = resource.map((resource) => {
+  resources = resources.map((resource) => {
     let lastResource = simplifiedResources[simplifiedResources.length - 1];
     let scheduleKey = weekDays[resource.dia - 1];
     if (
@@ -144,6 +58,103 @@ export async function getResourceExpanded(req, res) {
     lastResource.schedule[scheduleKey] = {
       start: resource.hora_inicio,
       end: resource.hora_cierre,
+    };
+  });
+  return res.status(200).json(simplifiedResources);
+}
+
+export const getUnitSchedule = async (req, res) => {
+  const { unitNumber } = req.params;
+
+  try {
+    let [queryResult] = await pool.query(
+      `SELECT * FROM horario_unidad LEFt JOIN unidad on horario_unidad.fk_num_unidad = unidad.num_unidad
+      WHERE fk_num_unidad = ?`,
+      [unitNumber]
+    );
+    if (queryResult.length == 0) {
+      return res
+        .status(500)
+        .json({ error: "No hay un horario para la unidad" });
+    }
+    let schedules = {};
+    for (let schedule of queryResult) {
+      let day = weekDays[schedule.dia - 1];
+      let horary = {
+        start: schedule.hora_inicio,
+        end: schedule.hora_cierre,
+      };
+      schedules[day] = horary;
+    }
+    return res.status(200).json({
+      unidNumber: unitNumber,
+      name: queryResult[0].nombre,
+      schedule: schedules,
+    });
+  } catch (error) {
+    return res.status(500).json({ error: error.message });
+  }
+};
+
+export async function getResourceExpanded(req, res) {
+  const id = req.params.id;
+  let [resource] = await pool.query(
+    `SELECT
+    recurso.*, auditorio.aforo, aula.cantidad_puestos, aula.material_puestos, patio.tipo_patio,
+    horario_recurso.dia, horario_recurso.hora_inicio, horario_recurso.hora_cierre
+    from recurso 
+    LEFT JOIN auditorio ON recurso.pk_id_recurso = auditorio.pk_fk_id_recurso 
+      AND recurso.pk_fk_num_unidad = auditorio.pk_fk_num_unidad 
+    LEFT JOIN aula ON recurso.pk_id_recurso = aula.pk_fk_id_recurso 
+      AND recurso.pk_fk_num_unidad = aula.pk_fk_num_unidad 
+    LEFT JOIN patio ON recurso.pk_id_recurso = patio.pk_fk_id_recurso 
+      AND recurso.pk_fk_num_unidad = patio.pk_fk_num_unidad
+    INNER JOIN horario_recurso ON horario_recurso.fk_num_unidad = recurso.pk_fk_num_unidad
+    AND horario_recurso.fk_id_recurso = recurso.pk_id_recurso 
+    WHERE recurso.pk_id_recurso = (?);`,
+    [id]
+  );
+  const weekDays = [
+    "Lunes",
+    "Martes",
+    "Miercoles",
+    "Jueves",
+    "Viernes",
+    "Sabado",
+    "Domingo",
+  ];
+  let simplifiedResources = [];
+  resource = resource.map((resource) => {
+    let lastResource = simplifiedResources[simplifiedResources.length - 1];
+    let horarioKey = weekDays[resource.dia - 1];
+    if (
+      simplifiedResources.length == 0 ||
+      lastResource.id != resource.pk_id_recurso
+    ) {
+      let simplified = {
+        id: resource.pk_id_recurso,
+        unidad: resource.pk_fk_num_unidad,
+        nombre: resource.nombre,
+        descripcion: resource.descripcion,
+      };
+      if (resource.aforo) {
+        simplified.tipo = "auditorio";
+        simplified.aforo = resource.aforo;
+      } else if (resource.material_puestos) {
+        simplified.tipo = "aula";
+        simplified.material_puestos = resource.material_puestos;
+        simplified.cantidad_puestos = resource.cantidad_puestos;
+      } else {
+        simplified.tipo = "patio";
+        simplified.tipo_patio = resource.tipo_patio;
+      }
+      simplified.horario = {};
+      lastResource = simplified;
+      simplifiedResources.push(simplified);
+    }
+    lastResource.horario[horarioKey] = {
+      hora_inicio: resource.hora_inicio,
+      hora_cierre: resource.hora_cierre,
     };
   });
   return res.status(200).json(simplifiedResources);
@@ -237,8 +248,8 @@ const validarFechas = async (horario) => {
         );
 
         if (
-          horaInicioDate < horaInicioDateUnid ||
-          horaCierreDate > horaCierreDateUnid
+          horaInicioDate <= horaInicioDateUnid ||
+          horaCierreDate >= horaCierreDateUnid
         ) {
           return "Horas establecidas fuera de rango en base a la unidad";
         }
@@ -452,7 +463,7 @@ export const updateResource = async (req, res) => {
 
         await pool.query(
           "UPDATE horario_recurso SET hora_inicio = (?), hora_cierre = (?) WHERE fk_id_recurso = (?) AND fk_num_unidad = 1 AND dia = (?)",
-          [horaInicioDate, horaCierreDate, id, diaAnum(diaSemana),]
+          [horaInicioDate, horaCierreDate, id, diaAnum(diaSemana)]
         );
       }
     }

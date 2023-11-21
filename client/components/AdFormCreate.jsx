@@ -1,7 +1,6 @@
-import "./formreserve.css"
-import React from 'react';
-import {useState} from "react";
-import { useContextUser } from "../context/UserContext.jsx";
+import "./formreserve.css";
+import { useState } from "react";
+import { createResourceRequest } from "../api/recursos.api.js";
 
 const FormReserve = ({onClose, unitSchedule}) => {
   const [selectedOption, setSelectedOption] = useState('');
@@ -10,105 +9,293 @@ const FormReserve = ({onClose, unitSchedule}) => {
   const [horaInicial, setHoraInicial] = useState('');
   const [horaFinal, setHoraFinal] = useState('');
 
-  const {getAccessToken} = useContextUser();
+
+  const [formData, setFormData] = useState({
+    unidad: 1,
+    nombre: "",
+    descripcion: "",
+    tipo: "",
+    aforo: "",
+    cantidad_puestos: "",
+    material_puestos: "madera",
+    tipo_patio: "",
+    horario: {
+      Lunes: { hora_inicio: "", hora_cierre: "" },
+      Martes: { hora_inicio: "", hora_cierre: "" },
+      Miercoles: { hora_inicio: "", hora_cierre: "" },
+      Jueves: { hora_inicio: "", hora_cierre: "" },
+      Viernes: { hora_inicio: "", hora_cierre: "" },
+      Sabado: { hora_inicio: "", hora_cierre: "" },
+    },
+  });
 
   const handleSelectChange = (event) => {
     setSelectedOption(event.target.value);
+    setFormData({ ...formData, ["tipo"]: event.target.value });
   };
 
-  const handleSubmit = async (event) =>{
-   /*LOGICA SUBMIT*/ 
-  }
+  const handleSubmit = async (event) => {
+    try {
+      event.preventDefault();
+      await createResourceRequest(formData);
+      onClose();
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const handleChange = ({ target: { name, value } }) => {
+    if (name.includes("hora")) {
+      const [day, field] = name.split("-");
+      setFormData({
+        ...formData,
+        horario: {
+          ...formData.horario,
+          [day]: {
+            ...formData.horario[day],
+            [field]: value + ":00",
+          },
+        },
+      });
+    } else {
+      setFormData({ ...formData, [name]: value });
+    }
+  };
 
   return (
     <div className="fat_form">
       <form className="formRe" onSubmit={handleSubmit}>
         <label>
           ¿Qué tipo de recurso desea crear?:
-          <select className="normal" value={selectedOption} onChange={handleSelectChange}>
+          <select
+            className="normal"
+            value={selectedOption}
+            onChange={handleSelectChange}
+          >
             <option value="">Selecciona...</option>
-            <option value="auditorium">Auditorio</option>
-            <option value="classroom">Salón</option>
-            <option value="yard">Patio</option>
+            <option value="auditorio">Auditorio</option>
+            <option value="aula">Salón</option>
+            <option value="patio">Patio</option>
           </select>
-        </label> 
-        {selectedOption !== '' && (
-        <>
-        <label>
-          Unidad:
-          <input className="normal" type="number" defaultValue="1" readOnly />
         </label>
-        <label>
-          Nombre:
-          <input className="normal" type="text" />
-        </label>
-        {selectedOption === 'auditorium' ? (
-          <label>
-              Aforo:
-              <input className="normal" type="number" />
-          </label>
-        ): selectedOption === 'classroom' ? (
+        {selectedOption !== "" && (
           <>
+            <label>
+              Unidad:
+              <input
+                name="unidad"
+                value={formData.unidad}
+                className="normal"
+                type="number"
+                defaultValue="1"
+                onChange={handleChange}
+                readOnly
+              />
+            </label>
+            <label>
+              Nombre:
+              <input
+                name="nombre"
+                value={formData.nombre}
+                className="normal"
+                type="text"
+                onChange={handleChange}
+              />
+            </label>
+            {selectedOption === "auditorio" ? (
               <label>
+                Aforo:
+                <input
+                  name="aforo"
+                  value={formData.aforo}
+                  className="normal"
+                  type="number"
+                  onChange={handleChange}
+                />
+              </label>
+            ) : selectedOption === "aula" ? (
+              <>
+                <label>
                   Material de Silla:
-                  <input className="normal" type="text" />
-              </label>
-              <label>
+                  <input
+                    name="material_puestos"
+                    value={formData.material_puestos}
+                    className="normal"
+                    type="text"
+                    onChange={handleChange}
+                  />
+                </label>
+                <label>
                   Cantidad de Sillas:
-                  <input className="normal" type="number" min="1" />
+                  <input
+                    name="cantidad_puestos"
+                    value={formData.cantidad_puestos}
+                    className="normal"
+                    type="number"
+                    min="1"
+                    onChange={handleChange}
+                  />
+                </label>
+              </>
+            ) : selectedOption === "patio" ? (
+              <label>
+                Estilo:
+                <input
+                  name="tipo_patio"
+                  value={formData.tipo_patio}
+                  className="normal"
+                  type="text"
+                  onChange={handleChange}
+                />
               </label>
-          </>
-        ): selectedOption === 'yard' ? (
-          <label>
-              Estilo:
-              <input className="normal" type="text" />
-          </label>
-        ):""}
-        <label className="textarea">
-          Descripción:
-          <textarea />
-        </label>
+            ) : (
+              ""
+            )}
+            <label className="textarea">
+              Descripción:
+              <textarea
+                name="descripcion"
+                value={formData.descripcion}
+                onChange={handleChange}
+              />
+            </label>
 
-        <div className="schedule">
-          <p className="schTitle">Horarios:</p>
-          <div className="par">
-            <label>
-              Lunes:
-              <input className="normal" type="time" min={unitSchedule['Lunes'].start} max={unitSchedule['Lunes'].end} onChange="" />
-              <input className="normal" type="time" min={unitSchedule['Lunes'].start} max={unitSchedule['Lunes'].end} onChange="" />
-            </label>
-            <label>
-              Martes:
-              <input className="normal" type="time" min={unitSchedule['Martes'].start} max={unitSchedule['Martes'].end} onChange="" />
-              <input className="normal" type="time" min={unitSchedule['Martes'].start} max={unitSchedule['Martes'].end} onChange="" />
-            </label>
-          </div>
-          <div className="par">
-            <label>
-              Miércoles:
-              <input className="normal" type="time" min={unitSchedule['Miércoles'].start} max={unitSchedule['Miércoles'].end} onChange="" />
-              <input className="normal" type="time" min={unitSchedule['Miércoles'].start} max={unitSchedule['Miércoles'].end} onChange="" />
-            </label>
-            <label>
-              Jueves:
-              <input className="normal" type="time" min={unitSchedule['Jueves'].start} max={unitSchedule['Jueves'].end} onChange="" />
-              <input className="normal" type="time" min={unitSchedule['Jueves'].start} max={unitSchedule['Jueves'].end} onChange="" />
-            </label>
-          </div>
-          <div className="par">
-            <label>
-              Viernes:
-              <input className="normal" type="time" min={unitSchedule['Viernes'].start} max={unitSchedule['Viernes'].end} onChange="" />
-              <input className="normal" type="time" min={unitSchedule['Viernes'].start} max={unitSchedule['Viernes'].end} onChange="" />
-            </label>
-            <label>
-              Sábado:
-              <input className="normal" type="time" min={unitSchedule['Sábado'].start} max={unitSchedule['Sábado'].end} onChange="" />
-              <input className="normal" type="time" min={unitSchedule['Sábado'].start} max={unitSchedule['Sábado'].end} onChange="" />
-            </label>
-          </div>
-        </div>
-        </>
+            <div className="schedule">
+              <p className="schTitle">Horarios:</p>
+              <div className="par">
+                <label>
+                  Lunes:
+                  <input
+                    name="Lunes-hora_inicio"
+                    value={formData.horario.Lunes.hora_inicio}
+                    className="normal"
+                    type="time"
+                    min={unitSchedule['Lunes'].start}
+                    max={unitSchedule['Lunes'].end}
+                    onChange={handleChange}
+                  />
+                  <input
+                    name="Lunes-hora_cierre"
+                    value={formData.horario.Lunes.hora_cierre}
+                    className="normal"
+                    type="time"
+                    min={unitSchedule['Lunes'].start}
+                    max={unitSchedule['Lunes'].end}
+                    onChange={handleChange}
+                  />
+                </label>
+                <label>
+                  Martes:
+                  <input
+                    name="Martes-hora_inicio"
+                    value={formData.horario.Martes.hora_inicio}
+                    className="normal"
+                    type="time"
+                    min={unitSchedule['Martes'].start}
+                    max={unitSchedule['Martes'].end}
+                    onChange={handleChange}
+                  />
+                  <input
+                    name="Martes-hora_cierre"
+                    value={formData.horario.Martes.hora_cierre}
+                    className="normal"
+                    type="time"
+                    min={unitSchedule['Martes'].start}
+                    max={unitSchedule['Martes'].end}
+                    onChange={handleChange}
+                  />
+                </label>
+              </div>
+              <div className="par">
+                <label>
+                  Miércoles:
+                  <input
+                    name="Miercoles-hora_inicio"
+                    value={formData.horario.Miercoles.hora_inicio}
+                    className="normal"
+                    type="time"
+                    min={unitSchedule['Miércoles'].start}
+                    max={unitSchedule['Miércoles'].end}
+                    onChange={handleChange}
+                  />
+                  <input
+                    name="Miercoles-hora_cierre"
+                    value={formData.horario.Miercoles.hora_cierre}
+                    className="normal"
+                    type="time"
+                    min={unitSchedule['Miércoles'].start}
+                    max={unitSchedule['Miércoles'].end}
+                    onChange={handleChange}
+                  />
+                </label>
+                <label>
+                  Jueves:
+                  <input
+                    name="Jueves-hora_inicio"
+                    value={formData.horario.Jueves.hora_inicio}
+                    className="normal"
+                    type="time"
+                    min={unitSchedule['Jueves'].start}
+                    max={unitSchedule['Jueves'].end}
+                    onChange={handleChange}
+                  />
+                  <input
+                    name="Jueves-hora_cierre"
+                    value={formData.horario.Jueves.hora_cierre}
+                    className="normal"
+                    type="time"
+                    min={unitSchedule['Jueves'].start}
+                    max={unitSchedule['Jueves'].end}
+                    onChange={handleChange}
+                  />
+                </label>
+              </div>
+              <div className="par">
+                <label>
+                  Viernes:
+                  <input
+                    name="Viernes-hora_inicio"
+                    value={formData.horario.Viernes.hora_inicio}
+                    className="normal"
+                    type="time"
+                    min={unitSchedule['Viernes'].start}
+                    max={unitSchedule['Viernes'].end}
+                    onChange={handleChange}
+                  />
+                  <input
+                    name="Viernes-hora_cierre"
+                    value={formData.horario.Viernes.hora_cierre}
+                    className="normal"
+                    type="time"
+                    min={unitSchedule['Viernes'].start}
+                    max={unitSchedule['Viernes'].end}
+                    onChange={handleChange}
+                  />
+                </label>
+                <label>
+                  Sábado:
+                  <input
+                    name="Sabado-hora_inicio"
+                    value={formData.horario.Sabado.hora_inicio}
+                    className="normal"
+                    type="time"
+                    min={unitSchedule['Sábado'].start}
+                    max={unitSchedule['Sábado'].end}
+                    onChange={handleChange}
+                  />
+                  <input
+                    name="Sabado-hora_cierre"
+                    value={formData.horario.Sabado.hora_cierre}
+                    className="normal"
+                    type="time"
+                    min={unitSchedule['Sábado'].start}
+                    max={unitSchedule['Sábado'].end}
+                    onChange={handleChange}
+                  />
+                </label>
+              </div>
+            </div>
+          </>
         )}
 
         <div className="fat_btn">
