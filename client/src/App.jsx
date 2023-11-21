@@ -7,6 +7,7 @@ import Reservas from "../pages/Reservas";
 import Usuarios from '../pages/Usuarios';
 import Prestamos from '../pages/Prestamos'
 import Recursos from '../pages/Recursos'
+import Adrecursos from '../pages/AdRecursos'
 
 function App() {
   return (
@@ -22,6 +23,9 @@ function App() {
         </Route>
         <Route element={<PrivateRouteAdmin />}>
           <Route path="/prestamos" element={<Prestamos />} />
+        </Route>
+        <Route element={<PrivateRouteAdmin />}>
+          <Route path="/adrecursos" element={<Adrecursos />} />
         </Route>
         <Route element={<PrivateRoute />}>
           <Route path="/recursos" element={<Recursos />} />
