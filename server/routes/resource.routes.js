@@ -1,6 +1,8 @@
 import { Router } from "express";
+
 import {
   allResources,
+  getUnitSchedule,
   getResourceExpanded,
   getResource,
   getResources,
@@ -12,6 +14,7 @@ import {
 const router = Router();
 
 router.get("/all-resources", allResources);
+router.get("/unit-schedule/:unitNumber", getUnitSchedule);
 router.get("/resource/:id", allResources);
 router.post("/", createResource);
 router.get("/:id", getResource);
