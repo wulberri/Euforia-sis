@@ -6,6 +6,5 @@ export const pool = createPool({
     port: 3306,
     user: 'root', //Como no esta configutado un usuario por defecto es 'root'
     password: '', //Como no hay contraseña se pone un string vacio
-    password: 'root', //Como no hay contraseña se pone un string vacio
     database: 'euforia' //Nombre de la base de datos
 })
