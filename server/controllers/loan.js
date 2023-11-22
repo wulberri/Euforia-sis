@@ -74,7 +74,7 @@ export const endLoan = async (req, res) =>  {
             prestamo = prestamo[0]
         }
         if(prestamo.fk_id_admin_devolucion != null){
-            return res.status(400).json({message: 'El prestamo ya terminó'})
+            return res.status(200).json({message: 'El prestamo ya terminó'})
         }
         let [user] = await pool.query("SELECT * from usuario WHERE correo = ?", [reserveOwnerMail]);
         if(user.length != 1){
