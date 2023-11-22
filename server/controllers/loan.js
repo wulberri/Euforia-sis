@@ -27,13 +27,12 @@ export const startLoan = async (req, res) =>  {
         let now = new Date();
         let timeDifference = (now-reserva.fecha_inicio_reserva)/1000/60; //minutes
         
-        // NOTE commented for easy test
-        // if(timeDifference < -5){
-        //     return res.status(400).json({message: 'Es muy pronto para inciar el prestamo'})
-        // }
-        // else if(timeDifference > 5){
-        //     return res.status(400).json({message: 'Es muy tarde para inciar el prestamo'})
-        // }
+        if(timeDifference < -5){
+            return res.status(400).json({message: 'Es muy pronto para inciar el prestamo'})
+        }
+        else if(timeDifference > 5){
+            return res.status(400).json({message: 'Es muy tarde para inciar el prestamo'})
+        }
 
         try{
             await pool.query("INSERT INTO prestamo (fk_id_reserva, f_fecha_inicio, fk_id_admin_entrega) VALUES (?, ?, ?)",
