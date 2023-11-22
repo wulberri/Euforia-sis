@@ -3,6 +3,9 @@
     max-width: 1070px;
 }
 
-.cancel-btn {
-    /* cursor: copy; */
+.error-message {
+    text-align: center;
+    font-size: 20px;
+    font-weight: 600;
+    color: #ee6055;
 }

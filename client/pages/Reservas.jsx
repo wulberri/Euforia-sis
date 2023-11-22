@@ -57,15 +57,17 @@ function Dashboard() {
     }
   }
 
+
+
   return (
     <>
       <NavBar />
       <h1>Página de reservas</h1>
       {
-        reserves && (
+        reserves != null ? (
           <table className="table">
             <tr>
-              <th>#</th>
+              <th>Id</th>
               <th>Recurso</th>
               <th>Descripción</th>
               <th>Fecha</th>
@@ -77,7 +79,7 @@ function Dashboard() {
             {
               reserves.map((r, index) => (
                 <tr>
-                  <td>{index+1}</td>
+                  <td>{r.reserveID}</td>
                   <td>{r.resourceName}</td>
                   <td>{r.resourceDescp}</td>
                   <td>{formatDate(r.reserveStartDate)}</td>
@@ -96,6 +98,7 @@ function Dashboard() {
             }
           </table>
         )
+        :(<p className="error-message">No hay reservas</p>)
       }
     </>
   );
