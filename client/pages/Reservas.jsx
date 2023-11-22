@@ -35,7 +35,6 @@ function Dashboard() {
       month: 'short',
       day: 'numeric'
     };
-  
     return new Date(date).toLocaleDateString('es-ES', options);
   };
 

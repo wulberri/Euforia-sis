@@ -24,6 +24,24 @@ function ResourcesTable({data, email}) {
         setTimeout(()=>setMsg(''),2000)
     };
 
+    const formatDate = (date) => {
+      const options = {
+        weekday: 'short',
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric'
+      };
+      return new Date(date).toLocaleDateString('es-ES', options);
+    };
+  
+    const formatHour = (date) => {
+      return new Date(date).toLocaleTimeString('es-ES', {
+        hour: 'numeric',
+        minute: '2-digit',
+        hour12: true,
+      });
+    };
+
     return (
        <div>
       {typeof data[0] === "object" ? (
@@ -42,11 +60,7 @@ function ResourcesTable({data, email}) {
                 <td className="noPointer">{item.reserveID}</td>
                 <td className="noPointer">{item.resourceName}</td>
                 <td className="noPointer">{
-                  new Date(item.reserveEndDate).getDate() +"/"+
-                  (new Date(item.reserveEndDate).getMonth()+1) +"/"+
-                  new Date(item.reserveEndDate).getFullYear() +" "+
-                  ("00"+new Date(item.reserveEndDate).getHours()).slice(-2) +":"+
-                  ("00"+new Date(item.reserveEndDate).getMinutes()).slice(-2)
+                  formatDate(item.reserveEndDate)+' '+formatHour(item.reserveEndDate)
                 }</td>
                 <td className="noPointer opBtns">
                     <span className="accept" onClick={()=>iniciarLoan(item)}>

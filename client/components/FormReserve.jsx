@@ -90,6 +90,17 @@ const FormReserve = ({ data, onClose }) => {
     console.log(response)
   }
 
+  const formatDate = (date) => {
+    const options = {
+      weekday: 'short',
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric'
+    };
+  
+    return new Date(date).toLocaleDateString('es-ES', options);
+  };
+
   return (
     <div className="fat_form">
       <form className="formRe" onSubmit={handleSubmit}>
@@ -166,7 +177,7 @@ const FormReserve = ({ data, onClose }) => {
       <div>
           <ul>
             {responses.map(([date, response, error], index) => (
-              <li className={error ? 'response-error' : ''} key={index}>{date.toDateString()} {response.message || response.error}</li>
+              <li className={error ? 'response-error' : ''} key={index}>{formatDate(date)} {response.message || response.error}</li>
             ))}
         </ul>
       </div>

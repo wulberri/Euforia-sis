@@ -125,4 +125,5 @@ VALUES
 -- select * from recurso, patio where recurso.pk_id_recurso = patio.pk_fk_id_recurso;
 
 # Usuario administrador
+INSERT INTO `usuario` (`nombre`, `correo`, `contrasena`, `rol`) VALUES ('Euforia', 'euforia@gmail.com', '$2b$10$I4lhkUSxkpeChTx1npZmgey36.ui8ie/6y3p6xk.twDI5WKkTUIUC', 'Administrador')
 

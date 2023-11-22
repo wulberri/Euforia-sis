@@ -92,6 +92,10 @@ select.normal {
     color: #ee6055;
 }
 
+li {
+    text-align: left;
+}
+
 .adreservesForm {
     margin-bottom: 30px;
 }
