@@ -8,7 +8,7 @@ import InfoSign from "../components/InfoSign";
 
 function Sign() {
   //Uso del contexto de la app
-  const { isAuthenticated } = useContextUser();
+  const { isAuthenticated, getUser } = useContextUser();
 
   //Estado para la animación del contenedor del formulario (de lado a lado)
   const [container, setContainer] = useState("container");
@@ -21,7 +21,15 @@ function Sign() {
   };
 
   //Si un usuario YA esta autenticado me redirige a panel de reservas
-  if (isAuthenticated) return <Navigate to="/reservas" />;
+  if (isAuthenticated ){
+    let user = getUser();
+    if(user.rol == "administrador"){
+      return <Navigate to="/adreservas" />;
+    }
+    else {
+      return <Navigate to="/reservas" />;
+    }
+  } 
   //Si un usuario NO esta autenticado me muestra los formularios
   return (
     <div className="box-flex-form">

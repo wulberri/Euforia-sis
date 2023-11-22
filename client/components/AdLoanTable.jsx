@@ -45,8 +45,8 @@ function ResourcesTable({data, email}) {
                   new Date(item.reserveEndDate).getDate() +"/"+
                   (new Date(item.reserveEndDate).getMonth()+1) +"/"+
                   new Date(item.reserveEndDate).getFullYear() +" "+
-                  new Date(item.reserveEndDate).getHours() +":"+
-                  new Date(item.reserveEndDate).getMinutes()
+                  ("00"+new Date(item.reserveEndDate).getHours()).slice(-2) +":"+
+                  ("00"+new Date(item.reserveEndDate).getMinutes()).slice(-2)
                 }</td>
                 <td className="noPointer opBtns">
                     <span className="accept" onClick={()=>finLoan(item)}>

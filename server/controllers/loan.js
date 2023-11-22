@@ -28,10 +28,10 @@ export const startLoan = async (req, res) =>  {
         let timeDifference = (now-reserva.fecha_inicio_reserva)/1000/60; //minutes
         
         if(timeDifference < -5){
-            return res.status(400).json({message: 'Es muy pronto para inciar el prestamo'})
+            return res.status(200).json({message: 'Es muy pronto para inciar el prestamo'})
         }
         else if(timeDifference > 5){
-            return res.status(400).json({message: 'Es muy tarde para inciar el prestamo'})
+            return res.status(200).json({message: 'Es muy tarde para inciar el prestamo'})
         }
 
         try{
