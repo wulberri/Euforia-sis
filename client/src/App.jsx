@@ -9,6 +9,7 @@ import Prestamos from '../pages/Prestamos'
 import Recursos from '../pages/Recursos'
 import Adrecursos from '../pages/AdRecursos'
 import Adreservas from '../pages/AdReservas'
+import IntegrationResources from '../pages/IntegrationResources'
 
 function App() {
   return (
@@ -33,6 +34,12 @@ function App() {
         </Route>
         <Route element={<PrivateRoute />}>
           <Route path="/recursos" element={<Recursos />} />
+        </Route>
+        <Route element={<PrivateRoute />}>
+          <Route path="/otros" element={<IntegrationResources />} />
+        </Route>
+        <Route element={<PrivateRouteAdmin />}>
+          <Route path="/otros-ad" element={<IntegrationResources />} />
         </Route>
         <Route path="*" element={<NotFound />} />
       </Routes>

@@ -35,6 +35,7 @@ function NavBar() {
       </div>
 
       <div className="nav-content">
+        <Link to={getUser().rol === "usuario" ? "/otros": "/otros-ad"}>Otras unidades</Link>
         {getUser().rol === "usuario" ? (
           <Link to="/recursos">Recursos</Link>
         ):(
