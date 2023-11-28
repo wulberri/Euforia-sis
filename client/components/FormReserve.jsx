@@ -88,6 +88,9 @@ const FormReserve = ({ data, onClose }) => {
     }
     setResponses(response)
     console.log(response)
+    setTimeout(()=>{
+      onClose()
+    },2000)
   }
 
   const formatDate = (date) => {

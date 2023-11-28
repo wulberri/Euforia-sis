@@ -9,3 +9,22 @@
     font-weight: 600;
     color: #ee6055;
 }
+
+.filter-container {
+    display: flex;
+    justify-content: center;
+}
+
+.filter-container label {
+    font-size: 20px;
+    line-height: 23px;
+    margin: 0 10px;
+}
+
+.filter-container select {
+    font-size: 17px;
+}
+
+.btn-clear {
+    margin-left: 10px;
+}

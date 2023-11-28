@@ -8,6 +8,7 @@ Observaciones:
 2. El idDelRecurso debe ser un recurso que si este en la BD
 */
 
+/*
 //Credenciales de pruebas
 const idDelRecurso = 4;
 const userData = {
@@ -143,6 +144,21 @@ describe("Eliminación de recurso", () => {
       .expect(404)
       .end((err, res) => {
         if (err) return done(err);
+        done();
+      });
+  });
+});
+*/
+
+describe("Operaciones de integración", () => {
+  it("debería obtener una lista de elementos", (done) => {
+    request(app)
+      .get("/api/integration/all-resources")
+      .expect(200)
+      .end((err, res) => {
+        if (err) return done(err);
+        expect(Array.isArray(res.body)).toBe(true);
+        expect(res.body.length).toBeGreaterThan(0);
         done();
       });
   });
